@@ -203,27 +203,35 @@ export default function MarkdownRenderer({ markdown, guidePath }: MarkdownRender
 
     // A marked-up blockquote becomes a yellow alert box. An unmarked one keeps
     // the ordinary quote styling from PROSE_CLASSES.
+    //
+    // Rendered as a <div role="note">, NOT a <blockquote>: the `prose-blockquote:*`
+    // styles have the same specificity as utilities set here, so a blockquote lost
+    // the cascade and kept typography's teal left border and teal-tinted
+    // background. A callout is an admonition rather than a quotation anyway, so
+    // `role="note"` is also the more honest element.
     blockquote({ children, node, ...rest }) {
       const kind = readCalloutKind(node)
       if (!kind) return <blockquote {...rest}>{children}</blockquote>
 
       const Icon = kind === 'note' || kind === 'tip' ? Info : Warning
       return (
-        <blockquote
-          className="my-6 flex gap-3.5 rounded-2xl border-0 bg-amber-wash px-4 py-4 text-ink-900 not-italic ring-1 ring-amber-line sm:px-5"
-          {...rest}
+        <div
+          role="note"
+          data-callout={kind}
+          className="my-6 flex items-start gap-3 rounded-2xl bg-amber-wash px-4 py-4 text-ink-900 ring-1 ring-amber-line sm:px-5"
         >
-          <Icon
-            size={24}
-            weight="duotone"
-            aria-hidden="true"
-            className="mt-0.5 shrink-0 text-amber-deep"
-          />
-          <div className="min-w-0 flex-1 space-y-3">
+          {/* Matching the first line's height centres the icon on that line
+              instead of letting it float above the text. */}
+          <span className="flex h-[1.7778em] shrink-0 items-center">
+            <Icon size={22} weight="duotone" aria-hidden="true" className="text-amber-deep" />
+          </span>
+          {/* Typography gives paragraphs a top margin, which would push the text
+              down away from the icon; zero it at the edges only. */}
+          <div className="min-w-0 flex-1 [&>:first-child]:mt-0 [&>:last-child]:mb-0">
             <span className="visually-hidden">{CALLOUT_LABELS[kind]}: </span>
             {children}
           </div>
-        </blockquote>
+        </div>
       )
     },
 

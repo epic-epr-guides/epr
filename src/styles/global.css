@@ -35,8 +35,8 @@
   --color-amber-deep: #b97324;
   /* Light yellow ground for note/warning callouts inside guide content.
      ink-900 text on this clears WCAG AA comfortably. */
-  --color-amber-wash: #fdf7e3;
-  --color-amber-line: #eccd8a;
+  --color-amber-wash: #fdf3c9;
+  --color-amber-line: #e6c454;
 
   /* Minimum comfortable touch target. Used as a named size so the 44px rule is
      explicit in the markup rather than a magic number. */
