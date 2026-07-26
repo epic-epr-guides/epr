@@ -38,6 +38,21 @@ Start a line with `>` for a note that must stand out:
 
 > Always confirm the patient's identity before opening a record.
 
+For something that needs more attention, add a marker on the first line. It becomes a yellow
+alert box with an icon:
+
+```markdown
+> [!NOTE]
+> Keep the summary short so the list stays readable when printed.
+```
+
+> [!NOTE]
+> Keep the summary short so the list stays readable when printed.
+
+`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]` all work. Note and Tip show an
+information icon, the other three a warning icon. The marker itself is never displayed, and it is
+read out to screen readers so the alert is not colour-only.
+
 ## Tables
 
 | Field | What to enter |

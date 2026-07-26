@@ -2,10 +2,11 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import Markdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import rehypeSanitize from 'rehype-sanitize'
-import { ArrowSquareOut } from '@phosphor-icons/react'
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
+import { ArrowSquareOut, Info, Warning } from '@phosphor-icons/react'
 import { contentUrl } from '../content'
 import { resolveRelative, routeForContentPath } from '../tree'
+import { remarkCallouts, type CalloutKind } from '../remarkCallouts'
 
 const VIDEO_PATTERN = /\.(mp4|webm|ogv)(?:[?#].*)?$/i
 const MARKDOWN_PATTERN = /\.md(?:[?#].*)?$/i
@@ -14,6 +15,34 @@ const ABSOLUTE_PATTERN = /^(?:[a-z][a-z\d+\-.]*:|\/\/)/i
 
 function isVideo(url: string): boolean {
   return VIDEO_PATTERN.test(url)
+}
+
+/**
+ * `remarkCallouts` marks a blockquote with `data-callout`. Sanitising runs after
+ * that and drops any attribute not explicitly allowed, so it has to be listed
+ * here or the alert silently renders as a plain quote.
+ */
+const SANITIZE_SCHEMA = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    blockquote: [...(defaultSchema.attributes?.blockquote ?? []), 'dataCallout'],
+  },
+}
+
+/** Screen-reader label per callout kind — the box itself is only colour and an icon. */
+const CALLOUT_LABELS: Record<CalloutKind, string> = {
+  note: 'Note',
+  tip: 'Tip',
+  important: 'Important',
+  warning: 'Warning',
+  caution: 'Caution',
+}
+
+function readCalloutKind(node: unknown): CalloutKind | undefined {
+  const properties = (node as { properties?: Record<string, unknown> } | undefined)?.properties
+  const value = properties?.['dataCallout'] ?? properties?.['data-callout']
+  return typeof value === 'string' && value in CALLOUT_LABELS ? (value as CalloutKind) : undefined
 }
 
 /**
@@ -172,6 +201,32 @@ export default function MarkdownRenderer({ markdown, guidePath }: MarkdownRender
       return <img src={resolved} alt={alt ?? ''} loading="lazy" decoding="async" {...rest} />
     },
 
+    // A marked-up blockquote becomes a yellow alert box. An unmarked one keeps
+    // the ordinary quote styling from PROSE_CLASSES.
+    blockquote({ children, node, ...rest }) {
+      const kind = readCalloutKind(node)
+      if (!kind) return <blockquote {...rest}>{children}</blockquote>
+
+      const Icon = kind === 'note' || kind === 'tip' ? Info : Warning
+      return (
+        <blockquote
+          className="my-6 flex gap-3.5 rounded-2xl border-0 bg-amber-wash px-4 py-4 text-ink-900 not-italic ring-1 ring-amber-line sm:px-5"
+          {...rest}
+        >
+          <Icon
+            size={24}
+            weight="duotone"
+            aria-hidden="true"
+            className="mt-0.5 shrink-0 text-amber-deep"
+          />
+          <div className="min-w-0 flex-1 space-y-3">
+            <span className="visually-hidden">{CALLOUT_LABELS[kind]}: </span>
+            {children}
+          </div>
+        </blockquote>
+      )
+    },
+
     // A video renders as a <figure>, which is not legal inside a <p>. When a
     // paragraph holds nothing but the video link, drop the paragraph wrapper.
     p({ children, node, ...rest }) {
@@ -199,9 +254,9 @@ export default function MarkdownRenderer({ markdown, guidePath }: MarkdownRender
   return (
     <div className={PROSE_CLASSES}>
       <Markdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkCallouts]}
         // Guide files are admin-supplied but still untrusted input.
-        rehypePlugins={[rehypeSanitize]}
+        rehypePlugins={[[rehypeSanitize, SANITIZE_SCHEMA]]}
         components={components}
       >
         {markdown}
