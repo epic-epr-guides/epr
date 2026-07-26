@@ -6,7 +6,7 @@ site's navigation.
 
 **Proof of concept.** No authentication, no search, no server-side code.
 
-- **Readers** need nothing but a browser. Start at [Welcome](content/01-getting-started/01-welcome.md).
+- **Readers** need nothing but a browser. Start at [Welcome](content/getting-started/welcome.md).
 - **Content maintainers** want [Adding content](#adding-content) below.
 - **Whoever deploys it** wants [Deploying](#deploying).
 
@@ -27,8 +27,8 @@ manifest; each `.md` file is fetched on demand when a reader opens it.
 ├── assets/             ← built JS/CSS
 └── content/            ← everything a maintainer touches
     ├── manifest.json   ← the folder tree (generated, or hand-edited)
-    ├── 01-getting-started/
-    │   └── 01-welcome.md
+    ├── getting-started/
+    │   └── welcome.md
     └── appointments/
         ├── book-an-appointment.md
         └── media/
@@ -70,13 +70,13 @@ runs it and does not need Node.js installed — it only serves static files.
 6. Reload the site.
 
 There is a full authoring reference in the seed content itself:
-[Formatting Reference](content/02-for-administrators/formatting-reference.md) and
-[Images and Video](content/02-for-administrators/media-examples/images-and-video.md).
+[Formatting Reference](content/for-administrators/formatting-reference.md) and
+[Images and Video](content/for-administrators/media-examples/images-and-video.md).
 
 ### Importing from Word
 
 ```bash
-npm run import:docx -- "path/to/guide.docx" --into 03-my-category --names "first-shot,second-shot"
+npm run import:docx -- "path/to/guide.docx" --into my-category --names "first-shot,second-shot"
 ```
 
 Add `--dry-run` to print the Markdown without writing anything — always worth doing first.
@@ -122,10 +122,18 @@ clone. Remove both the `.gitignore` lines and the JSON entry once the images are
 > This matters because the site has **no authentication**. There is no "internal only" —
 > uploading a file publishes it to anyone who can reach the URL.
 
-### Prefixing names to control order
+### Controlling the order things appear in
 
-`01-`, `02-` prefixes on files and folders set the order in the menu and are stripped from the
-displayed title. `01-getting-started/` shows as "Getting Started".
+Folder and file names carry no numeric prefixes. Order is set by the order of entries in
+`manifest.json`, and `npm run manifest` **keeps whatever order it finds there** — the same way it
+keeps a hand-edited folder `title`. So to move a category up the menu, move its entry up in the
+file; the next regeneration respects it.
+
+Anything genuinely new is appended to the bottom of its category rather than slotted in
+alphabetically, so a freshly added guide is easy to spot and easy to move.
+
+With no previous manifest to learn from, the fallback is folders before guides, each
+alphabetically.
 
 ### When the manifest must be regenerated
 
@@ -140,25 +148,26 @@ The manifest describes **structure only**.
 ### Editing the manifest by hand
 
 The format is deliberately simple enough for Notepad. A folder has `children`; a guide does not.
-`name` must match the real file or folder name exactly, including `.md`.
+`path` must match the real file or folder name exactly, including `.md` — one name only, never a
+nested path like `appointments/book.md`, since nesting is expressed with `children`.
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "tree": [
     {
       "type": "folder",
-      "name": "appointments",
+      "path": "appointments",
       "title": "Appointments",
       "children": [
-        { "type": "guide", "name": "book-an-appointment.md", "title": "Book an Appointment" }
+        { "type": "guide", "path": "book-an-appointment.md", "title": "Book an Appointment" }
       ]
     }
   ]
 }
 ```
 
-`title` is optional — without it the app derives one from the name. Folder titles you edit here
+`title` is optional — without it the app derives one from the `path`. Folder titles you edit here
 by hand are preserved when you next run `npm run manifest`; guide titles are re-read from each
 file's `#` heading.
 

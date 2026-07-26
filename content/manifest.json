@@ -1,60 +1,60 @@
 {
-  "version": 1,
+  "version": 2,
   "tree": [
     {
       "type": "folder",
-      "name": "01-getting-started",
+      "path": "getting-started",
       "title": "Getting Started",
       "children": [
         {
           "type": "guide",
-          "name": "01-welcome.md",
+          "path": "welcome.md",
           "title": "Welcome"
         },
         {
           "type": "guide",
-          "name": "02-finding-a-guide.md",
+          "path": "finding-a-guide.md",
           "title": "Finding a Guide"
         }
       ]
     },
     {
       "type": "folder",
-      "name": "02-for-administrators",
+      "path": "for-administrators",
       "title": "For Administrators",
       "children": [
         {
-          "type": "folder",
-          "name": "media-examples",
-          "title": "Media Examples",
-          "children": [
-            {
-              "type": "guide",
-              "name": "images-and-video.md",
-              "title": "Images and Video"
-            }
-          ]
-        },
-        {
           "type": "guide",
-          "name": "adding-a-guide.md",
+          "path": "adding-a-guide.md",
           "title": "Adding a Guide"
         },
         {
           "type": "guide",
-          "name": "formatting-reference.md",
+          "path": "formatting-reference.md",
           "title": "Formatting Reference"
+        },
+        {
+          "type": "folder",
+          "path": "media-examples",
+          "title": "Media Examples",
+          "children": [
+            {
+              "type": "guide",
+              "path": "images-and-video.md",
+              "title": "Images and Video"
+            }
+          ]
         }
       ]
     },
     {
       "type": "folder",
-      "name": "03-epic",
+      "path": "epic",
       "title": "EPIC",
       "children": [
         {
           "type": "guide",
-          "name": "inpatient-ward-list-guide.md",
+          "path": "inpatient-ward-list-guide.md",
           "title": "Inpatient Ward List Guide"
         }
       ]

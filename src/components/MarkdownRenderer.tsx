@@ -53,8 +53,8 @@ const PROSE_CLASSES = [
   'prose-code:before:content-none prose-code:after:content-none',
   'prose-pre:rounded-2xl prose-pre:bg-white/90 prose-pre:text-ink-900 prose-pre:ring-1 prose-pre:ring-ink-900/10',
   '[&_pre_code]:bg-transparent [&_pre_code]:ring-0 [&_pre_code]:font-normal',
-  // Media and rules
-  'prose-img:rounded-2xl prose-img:ring-1 prose-img:ring-ink-900/10',
+  // Media and rules. Screenshots carry their own window chrome and callout
+  // boxes, so a border and rounded corners only fought with the image content.
   'prose-hr:border-ink-900/10',
 ].join(' ')
 

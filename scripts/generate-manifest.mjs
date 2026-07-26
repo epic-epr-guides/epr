@@ -12,13 +12,18 @@
  *
  * Rules it follows:
  *  - A folder becomes a category; a `.md` file becomes a guide.
+ *  - Each entry's `path` is its single file or folder name on disk. Nesting is
+ *    expressed with `children`, so a `path` never contains a slash.
  *  - A guide's title comes from its first `# H1`, falling back to its file name.
- *  - `01-` style sort prefixes order the menu and are stripped from titles.
- *  - Folders are listed before guides, each alphabetically by file name.
  *  - Media files (.mp4, .png, …) are skipped — guides link to them directly.
  *  - Folders containing no guides at any depth are left out (this is what keeps
  *    `media/` folders from appearing in the menu).
- *  - A folder title you edited by hand in the previous manifest is preserved.
+ *  - Two kinds of hand edit in the previous manifest are preserved: a folder's
+ *    `title`, and the ORDER of entries within a folder. Reorder the tree in
+ *    manifest.json and it sticks; new files are appended to their category.
+ *  - Otherwise: folders before guides, each alphabetically by file name.
+ *  - Emits `"version": 2`. Version 1 used `name` where this uses `path`; the app
+ *    detects an old manifest and says so rather than failing obscurely.
  */
 
 import { readFile, readdir, writeFile } from 'node:fs/promises'
@@ -40,11 +45,21 @@ function stripSortPrefix(name) {
   return name.replace(/^\d+\s*[-_.]\s*/, '')
 }
 
+/** Must stay in step with the ACRONYMS set in src/content.ts. */
+const ACRONYMS = new Set(['epic', 'epr', 'nhs', 'mrn', 'sact', 'tci', 'mdt', 'it', 'faq', 'ooh'])
+
 function deriveTitle(name) {
   const base = stripSortPrefix(name.replace(/\.md$/i, ''))
   const words = base.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim()
   if (!words) return name
-  return words.replace(/\b\p{Ll}/gu, (character) => character.toUpperCase())
+  return words
+    .split(' ')
+    .map((word) =>
+      ACRONYMS.has(word.toLowerCase())
+        ? word.toUpperCase()
+        : word.replace(/^\p{Ll}/u, (character) => character.toUpperCase()),
+    )
+    .join(' ')
 }
 
 /** First `# Heading` in a markdown file, ignoring anything inside a code fence. */
@@ -76,29 +91,59 @@ async function readH1(filePath) {
  * Folder titles from the previous manifest, keyed by path inside `content/`,
  * so a hand-edited category name survives a regeneration.
  */
-async function readExistingFolderTitles() {
+async function readExisting() {
+  /** Hand-edited folder titles, keyed by path inside `content/`. */
   const titles = new Map()
+  /** Child order as last written, keyed by parent path ('' for the root). */
+  const order = new Map()
   try {
     const previous = JSON.parse(await readFile(MANIFEST_FILE, 'utf8'))
     const walk = (nodes, prefix) => {
+      const siblings = []
       for (const node of nodes ?? []) {
-        if (node?.type !== 'folder' || typeof node.name !== 'string') continue
-        const path = prefix ? `${prefix}/${node.name}` : node.name
-        if (typeof node.title === 'string' && node.title.trim() !== '') {
-          titles.set(path, node.title)
+        // Tolerate the pre-v2 field name so one stale manifest does not silently
+        // discard every hand-edited title and the whole authored order.
+        const segment = typeof node?.path === 'string' ? node.path : node?.name
+        if (typeof segment !== 'string') continue
+        const path = prefix ? `${prefix}/${segment}` : segment
+        siblings.push(segment)
+        if (node.type === 'folder') {
+          if (typeof node.title === 'string' && node.title.trim() !== '') {
+            titles.set(path, node.title)
+          }
+          walk(node.children, path)
         }
-        walk(node.children, path)
       }
+      order.set(prefix, siblings)
     }
     walk(previous?.tree, '')
   } catch {
-    // No previous manifest, or it is unreadable. Titles are simply derived.
+    // No previous manifest, or it is unreadable. Titles and order are derived.
   }
-  return titles
+  return { titles, order }
+}
+
+/**
+ * Reorders one directory's entries to match the order in the previous manifest.
+ *
+ * Without numeric `01-` prefixes on folder names there is nothing else to
+ * control navigation order, and plain alphabetical would bury "Getting Started"
+ * behind whatever happens to sort first. So the authored order in
+ * `manifest.json` is treated the same way as a hand-edited title: reorder the
+ * entries there and the next run keeps it. Anything new is appended, so a
+ * freshly added guide is easy to spot at the bottom of its category.
+ */
+function applyPreviousOrder(nodes, previousOrder) {
+  if (!previousOrder || previousOrder.length === 0) return nodes
+  const rank = new Map(previousOrder.map((segment, index) => [segment, index]))
+  return nodes
+    .map((node, index) => ({ node, index, rank: rank.get(node.path) ?? Number.MAX_SAFE_INTEGER }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map((entry) => entry.node)
 }
 
 /** Recursively builds the tree for one directory. Returns a list of nodes. */
-async function walk(directory, prefix, existingTitles, warnings) {
+async function walk(directory, prefix, existing, warnings) {
   const entries = await readdir(directory, { withFileTypes: true })
 
   const folders = []
@@ -112,14 +157,14 @@ async function walk(directory, prefix, existingTitles, warnings) {
     const contentPath = prefix ? `${prefix}/${entry.name}` : entry.name
 
     if (entry.isDirectory()) {
-      const children = await walk(entryPath, contentPath, existingTitles, warnings)
+      const children = await walk(entryPath, contentPath, existing, warnings)
       // A folder with no guides beneath it is not a category — this is how
       // `media/` folders stay out of the menu.
       if (children.length === 0) continue
       folders.push({
         type: 'folder',
-        name: entry.name,
-        title: existingTitles.get(contentPath) ?? deriveTitle(entry.name),
+        path: entry.name,
+        title: existing.titles.get(contentPath) ?? deriveTitle(entry.name),
         children,
       })
       continue
@@ -136,13 +181,14 @@ async function walk(directory, prefix, existingTitles, warnings) {
 
     guides.push({
       type: 'guide',
-      name: entry.name,
+      path: entry.name,
       title: (await readH1(entryPath)) ?? deriveTitle(entry.name),
     })
   }
 
-  // Folders before files, so categories sit above loose guides in the menu.
-  return [...folders, ...guides]
+  // Folders before files by default, then overlaid with any order the previous
+  // manifest authored.
+  return applyPreviousOrder([...folders, ...guides], existing.order.get(prefix))
 }
 
 /**
@@ -196,10 +242,10 @@ async function main() {
   }
 
   const warnings = []
-  const existingTitles = await readExistingFolderTitles()
-  const tree = await walk(CONTENT_DIR, '', existingTitles, warnings)
+  const existing = await readExisting()
+  const tree = await walk(CONTENT_DIR, '', existing, warnings)
 
-  await writeFile(MANIFEST_FILE, `${JSON.stringify({ version: 1, tree }, null, 2)}\n`, 'utf8')
+  await writeFile(MANIFEST_FILE, `${JSON.stringify({ version: 2, tree }, null, 2)}\n`, 'utf8')
 
   const total = countGuides(tree)
   console.log(`Wrote ${relative(process.cwd(), MANIFEST_FILE)}`)

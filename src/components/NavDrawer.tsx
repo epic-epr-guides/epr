@@ -277,9 +277,11 @@ function FolderRow(props: NodeListProps & { node: FolderNode; segments: string[]
           }`}
         />
         <span className="min-w-0 flex-1">{nodeTitle(node)}</span>
-        <span className="shrink-0 rounded-full bg-mist px-2 py-0.5 text-xs font-semibold text-ink-500 ring-1 ring-ink-900/5">
-          {guideCount}
-          <span className="visually-hidden"> {guideCount === 1 ? 'guide' : 'guides'}</span>
+        {/* The guide count is still announced to screen readers, so a
+            non-sighted reader knows how big a category is before opening it —
+            it is only the visible number badge that has gone. */}
+        <span className="visually-hidden">
+          {guideCount} {guideCount === 1 ? 'guide' : 'guides'}
         </span>
       </button>
       <div id={listId} hidden={!isOpen}>

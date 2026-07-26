@@ -15,7 +15,7 @@ On a tablet or a computer the same list appears as a permanent menu down the lef
 ## What is here at the moment
 
 Only these introductory pages. The EPR guides themselves are added by the IT support team —
-see [Adding a Guide](../02-for-administrators/adding-a-guide.md) if that is your job.
+see [Adding a Guide](../for-administrators/adding-a-guide.md) if that is your job.
 
 ## If something looks wrong
 

@@ -54,8 +54,8 @@ block for anything longer.
 
 ## Links
 
-- To another guide: `[Finding a Guide](../01-getting-started/02-finding-a-guide.md)` —
-  [like this](../01-getting-started/02-finding-a-guide.md). Use the file's real name including
+- To another guide: `[Finding a Guide](../getting-started/finding-a-guide.md)` —
+  [like this](../getting-started/finding-a-guide.md). Use the file's real name including
   `.md`; the site turns it into a normal in-site link so nothing downloads.
 - To an outside website: `[NHS website](https://www.nhs.uk)` —
   [like this](https://www.nhs.uk). These open in a new tab.
@@ -77,19 +77,22 @@ file name exactly, including `.md`.
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "tree": [
     {
       "type": "folder",
-      "name": "appointments",
+      "path": "appointments",
       "title": "Appointments",
       "children": [
-        { "type": "guide", "name": "book-an-appointment.md", "title": "Book an Appointment" }
+        { "type": "guide", "path": "book-an-appointment.md", "title": "Book an Appointment" }
       ]
     }
   ]
 }
 ```
+
+`path` is the folder or file name exactly as it appears on disk — one name only, never
+`appointments/book-an-appointment.md`. Nesting is expressed by putting entries inside `children`.
 
 Two rules: every `{` needs its `}`, and there is no comma after the last item in a list. If
 the site shows "We could not read the list of guides", a comma or bracket is usually the cause.
@@ -97,6 +100,7 @@ the site shows "We could not read the list of guides", a comma or bracket is usu
 ## Naming files and folders
 
 - Lowercase letters, numbers and hyphens only. No spaces, no apostrophes, no `&`.
-- Put a number in front of a folder or file name to control where it appears in the menu —
-  `01-getting-started` sorts first and displays as "Getting Started".
+- Folder and file names carry no numbers. To control where something appears in the menu, move
+  its entry up or down in `manifest.json` — that order is kept the next time the manifest is
+  regenerated. A brand-new guide is added to the bottom of its category.
 - Allowed file types: `.md`, `.mp4`, `.webm`, `.ogv`, `.png`, `.jpg`, `.gif`, `.svg`.

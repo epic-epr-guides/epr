@@ -8,16 +8,19 @@
 
 export interface GuideNode {
   type: 'guide'
-  /** File name as it exists on disk, including the `.md` extension. */
-  name: string
-  /** Optional display title. Falls back to a name derived from the file name. */
+  /**
+   * File name as it exists on disk, including the `.md` extension. A single
+   * segment only — the tree expresses nesting, so this never contains a `/`.
+   */
+  path: string
+  /** Optional display title. Falls back to one derived from the file name. */
   title?: string
 }
 
 export interface FolderNode {
   type: 'folder'
-  /** Folder name as it exists on disk. */
-  name: string
+  /** Folder name as it exists on disk. A single segment only. */
+  path: string
   title?: string
   children: ContentNode[]
 }
@@ -82,32 +85,47 @@ export function manifestUrl(): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Strips a leading sort prefix such as `01-` or `02_` used to order the
- * navigation. `01-getting-started` → `getting-started`.
+ * Strips a leading sort prefix such as `01-` or `02_`, for manifests that still
+ * use one to order the navigation. `01-getting-started` → `getting-started`.
  */
-export function stripSortPrefix(name: string): string {
-  return name.replace(/^\d+\s*[-_.]\s*/, '')
+export function stripSortPrefix(path: string): string {
+  return path.replace(/^\d+\s*[-_.]\s*/, '')
 }
 
-export function stripMdExtension(name: string): string {
-  return name.replace(/\.md$/i, '')
+export function stripMdExtension(path: string): string {
+  return path.replace(/\.md$/i, '')
 }
 
 /**
- * Display name derived from a file or folder name, used only when the manifest
- * supplies no `title`. `01-book-appointment.md` → `Book Appointment`.
+ * Words that should be shouted rather than title-cased, so a folder called
+ * `epic` reads as "EPIC" and not "Epic". Kept deliberately short and specific
+ * to this system's vocabulary. Must stay in step with the copy in
+ * `scripts/generate-manifest.mjs`.
  */
-export function deriveTitle(name: string): string {
-  const base = stripSortPrefix(stripMdExtension(name))
+const ACRONYMS = new Set(['epic', 'epr', 'nhs', 'mrn', 'sact', 'tci', 'mdt', 'it', 'faq', 'ooh'])
+
+/**
+ * Display name derived from a file or folder name, used only when the manifest
+ * supplies no `title`. `book-appointment.md` → `Book Appointment`.
+ */
+export function deriveTitle(path: string): string {
+  const base = stripSortPrefix(stripMdExtension(path))
   const words = base.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim()
-  if (!words) return name
-  return words.replace(/\b\p{Ll}/gu, (c) => c.toUpperCase())
+  if (!words) return path
+  return words
+    .split(' ')
+    .map((word) =>
+      ACRONYMS.has(word.toLowerCase())
+        ? word.toUpperCase()
+        : word.replace(/^\p{Ll}/u, (c) => c.toUpperCase()),
+    )
+    .join(' ')
 }
 
 /** The title to show for a node: manifest `title` first, derived name second. */
 export function nodeTitle(node: ContentNode): string {
   const title = node.title?.trim()
-  return title ? title : deriveTitle(node.name)
+  return title ? title : deriveTitle(node.path)
 }
 
 // ---------------------------------------------------------------------------
@@ -120,11 +138,21 @@ function validateNode(value: unknown, where: string): ContentNode {
   }
   const raw = value as Record<string, unknown>
 
-  if (typeof raw.name !== 'string' || raw.name.trim() === '') {
-    throw new Error(`${where} is missing a "name"`)
+  // Manifests written before version 2 used "name" for this field.
+  if (raw.path === undefined && typeof raw.name === 'string') {
+    throw new Error(
+      `${where} uses "name" instead of "path" — this manifest is in the old format. ` +
+        'Rename every "name" to "path" and set "version" to 2, or just run `npm run manifest` again',
+    )
   }
-  if (raw.name.includes('/') || raw.name.includes('\\') || raw.name.includes('..')) {
-    throw new Error(`${where} has an invalid "name" (${raw.name}) — names cannot contain paths`)
+  if (typeof raw.path !== 'string' || raw.path.trim() === '') {
+    throw new Error(`${where} is missing a "path"`)
+  }
+  if (raw.path.includes('/') || raw.path.includes('\\') || raw.path.includes('..')) {
+    throw new Error(
+      `${where} has an invalid "path" (${raw.path}) — it must be a single file or folder name. ` +
+        'Nesting is expressed with "children", not with a slash',
+    )
   }
   if (raw.title !== undefined && typeof raw.title !== 'string') {
     throw new Error(`${where} has a "title" that is not text`)
@@ -133,8 +161,8 @@ function validateNode(value: unknown, where: string): ContentNode {
 
   if (raw.type === 'guide') {
     return title === undefined
-      ? { type: 'guide', name: raw.name }
-      : { type: 'guide', name: raw.name, title }
+      ? { type: 'guide', path: raw.path }
+      : { type: 'guide', path: raw.path, title }
   }
 
   if (raw.type === 'folder') {
@@ -145,7 +173,7 @@ function validateNode(value: unknown, where: string): ContentNode {
     const list = Array.isArray(children) ? children : []
     const folder: FolderNode = {
       type: 'folder',
-      name: raw.name,
+      path: raw.path,
       children: list.map((child, i) => validateNode(child, `${where} → child ${i + 1}`)),
     }
     return title === undefined ? folder : { ...folder, title }

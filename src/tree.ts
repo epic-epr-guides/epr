@@ -14,7 +14,7 @@ export const WIKI_ROOT = '/wiki'
 
 /** The URL segment a node is addressed by. */
 export function segmentFor(node: ContentNode): string {
-  return node.type === 'guide' ? stripMdExtension(node.name) : node.name
+  return node.type === 'guide' ? stripMdExtension(node.path) : node.path
 }
 
 /** Router path for a list of URL segments. */
@@ -78,7 +78,7 @@ export function locate(tree: ContentNode[], segments: string[]): Located | null 
     if (found.type === 'guide' && index !== segments.length - 1) return null
 
     current = found
-    names.push(found.name)
+    names.push(found.path)
     walked.push(segmentFor(found))
     trail.push({ node: found, segments: [...walked], route: routeForSegments(walked) })
     level = found.type === 'folder' ? found.children : []

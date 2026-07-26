@@ -28,21 +28,11 @@ Either select **‘Write handover’** on the top right of the list when selecti
 
 ![](./media/patient-lists-toolbar.png)
 
-![](./media/handover-search.png)
-
-![](./media/notes-tabs-sidebar-summary.png)
+![](./media/handover-search-with-notes-tab.png)
 
 **Handover Tool**
 
-![](./media/handover-tool.png)
-
-**Make sure** to select **‘Clinical Haematology’**
-
-You can update patient information here
-
-You can add ward jobs here, which is seen by the team, each job can be ticked off once completed
-
-General plans can be added here and tick-boxes to check before end of day shift
+![](./media/handover-tool-with-arrows.png)
 
 ## Summary
 
@@ -63,9 +53,7 @@ If there have been any issues overnight, add to summary as below. Remember to re
 
 Jobs during ward rounds can be added to the **‘To Do’** section. You can either add a **‘task’** which creates a check-box job or type out a job/plan in the text box. These jobs will be updated in real-time and be visible to the wider team. Tick the check-box once completed, this will remove the job for everyone else on the team
 
-![](./media/handover-tool.png)
-
-Type in here to create at tick-box job
+![](./media/to-do.png)
 
 ## Printing the List
 
