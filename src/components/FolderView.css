@@ -1,0 +1,82 @@
+.folder__title {
+  font-size: 1.75rem;
+}
+
+.folder__intro {
+  margin-top: 0.6rem;
+  color: var(--ink-muted);
+}
+
+.folder__list {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+}
+
+/* Whole row is the tap target, comfortably past 44px. */
+.folder__row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 3.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow-raised);
+}
+
+.folder__row:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
+.folder__row:active {
+  background: var(--accent-wash);
+}
+
+.folder__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius);
+  background: var(--accent-wash);
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.folder__icon--guide {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+}
+
+.folder__label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.folder__name {
+  font-family: var(--font-heading);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.folder__meta {
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 48rem) {
+  .folder__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

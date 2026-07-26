@@ -1,0 +1,205 @@
+/*
+ * Rendered guide content. Sized for reading a numbered procedure one-thumbed on
+ * a phone while doing something else.
+ */
+
+.prose {
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);
+}
+
+/* Vertical rhythm: space between blocks, not inside them. */
+.prose > * + * {
+  margin-top: 1.1em;
+}
+
+.prose h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.25em;
+}
+
+.prose h2 {
+  font-size: 1.375rem;
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--line);
+}
+
+.prose h3 {
+  font-size: 1.125rem;
+  margin-top: 1.75em;
+}
+
+.prose h1 + *,
+.prose h2 + *,
+.prose h3 + * {
+  margin-top: 0.6em;
+}
+
+/* --- Lists ---------------------------------------------------------------
+ * Step-heavy ordered lists are the core content type. `list-style` stays
+ * `decimal` (rather than a CSS counter on a `list-style: none` list) so Safari
+ * keeps announcing the numbers to screen readers; only ::marker is restyled.
+ */
+
+.prose ol,
+.prose ul {
+  padding-left: 1.6em;
+}
+
+.prose li + li {
+  margin-top: 0.7em;
+}
+
+.prose li > ol,
+.prose li > ul {
+  margin-top: 0.7em;
+}
+
+.prose ol > li::marker {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.0625em;
+  color: var(--accent);
+}
+
+.prose ul > li::marker {
+  color: var(--accent);
+}
+
+.prose ol > li,
+.prose ul > li {
+  padding-left: 0.15em;
+}
+
+/* GFM task lists */
+.prose li:has(> input[type='checkbox']) {
+  list-style: none;
+  margin-left: -1.4em;
+}
+
+.prose input[type='checkbox'] {
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: 0.5em;
+  accent-color: var(--accent);
+  vertical-align: -0.1em;
+}
+
+/* --- Quotes, code ------------------------------------------------------- */
+
+.prose blockquote {
+  padding: 0.85rem 1rem;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--accent-wash);
+  font-size: 1.0625em;
+}
+
+.prose blockquote > * + * {
+  margin-top: 0.75em;
+}
+
+.prose code {
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  background: var(--surface-sunken);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+.prose pre {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  /* A long line scrolls inside the block, never widening the page. */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prose pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+/* --- Tables ------------------------------------------------------------- */
+
+.prose-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  /* Fading right edge signals there is more to see sideways. */
+  background:
+    linear-gradient(to right, var(--surface) 30%, rgb(255 255 255 / 0%)) left / 2.5rem 100% no-repeat,
+    linear-gradient(to left, var(--surface) 30%, rgb(255 255 255 / 0%)) right / 2.5rem 100% no-repeat,
+    linear-gradient(to right, rgb(16 32 30 / 12%), rgb(255 255 255 / 0%)) left / 0.75rem 100% no-repeat,
+    linear-gradient(to left, rgb(16 32 30 / 12%), rgb(255 255 255 / 0%)) right / 0.75rem 100% no-repeat,
+    var(--surface);
+  background-attachment: local, local, scroll, scroll, local;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375em;
+}
+
+.prose th,
+.prose td {
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.prose thead th {
+  background: var(--surface-sunken);
+  font-family: var(--font-heading);
+  white-space: nowrap;
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* --- Media -------------------------------------------------------------- */
+
+.prose img {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.prose-video {
+  margin: 1.5em 0;
+}
+
+.prose-video__player {
+  width: 100%;
+  /* Reserves space before metadata loads so the page does not jump. */
+  aspect-ratio: 16 / 9;
+  background: #10201e;
+  border-radius: var(--radius);
+}
+
+.prose-video__caption {
+  margin-top: 0.55em;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+.prose hr {
+  height: 1px;
+  margin: 2em 0;
+  border: 0;
+  background: var(--line);
+}

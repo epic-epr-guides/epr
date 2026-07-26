@@ -1,0 +1,181 @@
+/*
+ * Design tokens, reset and base typography.
+ *
+ * Mobile-first throughout: every rule here targets a ~375px phone. Larger
+ * screens are handled only by `min-width` queries, never by overriding
+ * desktop-first rules.
+ *
+ * No webfonts. A hospital device on a locked-down network may not reach a font
+ * CDN, and a 300ms font swap on a 4G ward connection is worse than a good
+ * system stack. Headings use a serif for character; body uses the platform UI
+ * face for maximum small-screen legibility.
+ */
+
+:root {
+  /* Palette — light, high contrast, one calm accent. */
+  --accent: #0f5c62;
+  --accent-strong: #0a4045;
+  --accent-wash: #e7f1f1;
+  --accent-wash-strong: #cfe4e4;
+
+  --ink: #1a2422;
+  --ink-muted: #55635f;
+  --line: #d5dedd;
+  --line-strong: #b6c3c1;
+  --surface: #ffffff;
+  --surface-sunken: #f5f8f8;
+  --page: #fbfcfc;
+
+  --danger: #a3261d;
+  --danger-wash: #fdf0ee;
+  --focus: #ffd24a;
+
+  /* Type */
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Segoe UI Variable Text',
+    'Helvetica Neue', Arial, sans-serif;
+  --font-heading: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia,
+    'Times New Roman', serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'Consolas', 'SF Mono', Menlo, monospace;
+
+  --text-base: 1.0625rem; /* 17px */
+  --leading-prose: 1.7;
+
+  /* Space */
+  --gutter: 1rem;
+  --radius: 0.5rem;
+  --tap: 2.75rem; /* 44px minimum touch target */
+
+  --appbar-height: 3.5rem;
+  --sidebar-width: 19rem;
+  --measure: 70ch;
+
+  --shadow-drawer: 0 0 0 100vmax rgb(16 32 30 / 45%);
+  --shadow-raised: 0 1px 2px rgb(16 32 30 / 8%), 0 4px 12px rgb(16 32 30 / 6%);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Never let a wide table or video introduce sideways page scroll. */
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink);
+  text-wrap: balance;
+  margin: 0;
+}
+
+p,
+ul,
+ol,
+figure,
+pre,
+blockquote,
+table {
+  margin: 0;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--accent-strong);
+  text-decoration-thickness: max(1px, 0.06em);
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  text-decoration-thickness: max(2px, 0.11em);
+}
+
+/* One visible, high-contrast focus style everywhere. */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 0;
+  box-shadow: 0 2px 0 2px var(--ink);
+  border-radius: 2px;
+}
+
+/* Anything interactive clears 44px without needing per-component fixes. */
+button,
+[role='button'] {
+  min-height: var(--tap);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  padding: 0.75rem 1rem;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 600;
+  transform: translateY(-120%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --text-base: 1.125rem; /* 18px from tablet up */
+    --gutter: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

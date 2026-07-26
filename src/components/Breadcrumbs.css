@@ -1,0 +1,48 @@
+.crumbs {
+  padding: 0.55rem 0 0.7rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.crumbs__list {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  /* Truncate rather than scroll — the current page is what must stay readable. */
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.crumbs__item {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Every crumb link keeps a 44px tap height without stretching the row. */
+.crumbs__item a {
+  display: inline-block;
+  padding: 0.6rem 0;
+  color: var(--accent-strong);
+}
+
+.crumbs__item--current {
+  /* The current page absorbs the leftover width and truncates last. */
+  flex: 1 1 auto;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.crumbs__sep {
+  flex: 0 0 auto;
+  color: var(--line-strong);
+}
+
+.crumbs__gap {
+  color: var(--ink-muted);
+  letter-spacing: 0.05em;
+}

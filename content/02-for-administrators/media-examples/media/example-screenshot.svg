@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img"
+     aria-label="Placeholder standing in for a screenshot of an application window">
+  <rect width="640" height="360" fill="#eef2f3"/>
+  <rect x="0" y="0" width="640" height="44" fill="#0f5c62"/>
+  <circle cx="24" cy="22" r="6" fill="#ffffff" opacity="0.9"/>
+  <circle cx="44" cy="22" r="6" fill="#ffffff" opacity="0.6"/>
+  <circle cx="64" cy="22" r="6" fill="#ffffff" opacity="0.35"/>
+  <rect x="120" y="13" width="400" height="18" rx="9" fill="#ffffff" opacity="0.25"/>
+  <rect x="24" y="72" width="180" height="264" rx="8" fill="#ffffff"/>
+  <rect x="44" y="96" width="120" height="10" rx="5" fill="#c7d3d5"/>
+  <rect x="44" y="124" width="140" height="10" rx="5" fill="#c7d3d5"/>
+  <rect x="44" y="152" width="100" height="10" rx="5" fill="#c7d3d5"/>
+  <rect x="228" y="72" width="388" height="264" rx="8" fill="#ffffff"/>
+  <rect x="252" y="100" width="220" height="16" rx="6" fill="#9fb4b7"/>
+  <rect x="252" y="140" width="336" height="10" rx="5" fill="#dde5e6"/>
+  <rect x="252" y="164" width="300" height="10" rx="5" fill="#dde5e6"/>
+  <rect x="252" y="188" width="330" height="10" rx="5" fill="#dde5e6"/>
+  <rect x="252" y="212" width="180" height="10" rx="5" fill="#dde5e6"/>
+  <rect x="252" y="272" width="128" height="40" rx="6" fill="#0f5c62"/>
+  <text x="316" y="297" font-family="Georgia, serif" font-size="15" fill="#ffffff"
+        text-anchor="middle">Save</text>
+  <text x="320" y="352" font-family="Georgia, serif" font-size="13" fill="#6b7c7e"
+        text-anchor="middle">Example image — replace with a real screenshot</text>
+</svg>
