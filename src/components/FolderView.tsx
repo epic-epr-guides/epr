@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
+import { Article, Asclepius, CaretRight, FolderSimple } from '@phosphor-icons/react'
 import { nodeTitle, type ContentNode } from '../content'
 import { countGuides, routeForSegments, segmentFor } from '../tree'
 import { EmptyState } from './EmptyState'
-import './FolderView.css'
 
 interface FolderViewProps {
   title: string
@@ -15,13 +15,40 @@ interface FolderViewProps {
 
 /**
  * A category page: the list of what is inside a folder. Also serves as the wiki
- * home page, where the folder is the root of the tree.
+ * home page, where the folder is the root of the tree and gets a hero header.
  */
 export function FolderView({ title, nodes, segments, intro }: FolderViewProps) {
+  const isHome = segments.length === 0
+
   return (
-    <div className="folder">
-      <h1 className="folder__title">{title}</h1>
-      {intro ? <p className="folder__intro">{intro}</p> : null}
+    <div className="pb-4">
+      <header className={isHome ? 'pt-4 text-center sm:pt-8' : 'pt-2'}>
+        {isHome ? (
+          <div className="animate-fade-up flex justify-center">
+            <span className="animate-float inline-flex size-20 items-center justify-center rounded-3xl bg-white shadow-xl shadow-teal-deep/10 ring-1 ring-teal-deep/10 sm:size-24">
+              <Asclepius size={46} weight="duotone" className="text-teal-deep" aria-hidden="true" />
+            </span>
+          </div>
+        ) : null}
+
+        <h1
+          className={`animate-fade-up stagger-1 font-display font-extrabold tracking-tight text-ink-900 ${
+            isHome ? 'mt-7 text-4xl leading-tight sm:text-5xl' : 'text-3xl leading-tight sm:text-4xl'
+          }`}
+        >
+          {isHome ? 'EPR Support Wiki' : title}
+        </h1>
+
+        {intro ? (
+          <p
+            className={`animate-fade-up stagger-2 mt-3.5 text-lg leading-relaxed text-ink-700 ${
+              isHome ? 'mx-auto max-w-md' : ''
+            }`}
+          >
+            {intro}
+          </p>
+        ) : null}
+      </header>
 
       {nodes.length === 0 ? (
         <EmptyState title="No guides in this folder yet">
@@ -31,24 +58,44 @@ export function FolderView({ title, nodes, segments, intro }: FolderViewProps) {
           </p>
         </EmptyState>
       ) : (
-        <ul className="folder__list">
-          {nodes.map((node) => {
+        <ul className="mt-9 grid gap-3.5 sm:grid-cols-2">
+          {nodes.map((node, index) => {
             const childSegments = [...segments, segmentFor(node)]
-            const count = node.type === 'folder' ? countGuides(node.children) : 0
+            const isFolder = node.type === 'folder'
+            const count = isFolder ? countGuides(node.children) : 0
+            const Icon = isFolder ? FolderSimple : Article
             return (
-              <li key={childSegments.join('/')}>
-                <Link className="folder__row" to={routeForSegments(childSegments)}>
-                  <span className={`folder__icon folder__icon--${node.type}`} aria-hidden="true">
-                    {node.type === 'folder' ? '❯' : '§'}
+              <li
+                key={childSegments.join('/')}
+                className="animate-fade-up"
+                // Cards arrive in sequence rather than all at once.
+                style={{ animationDelay: `${Math.min(index, 6) * 0.07 + 0.25}s` }}
+              >
+                <Link
+                  to={routeForSegments(childSegments)}
+                  className="group flex min-h-tap items-center gap-3.5 rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-ink-900/5 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md hover:ring-teal-deep/25 active:translate-y-0 active:bg-teal-soft sm:p-5"
+                >
+                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-soft text-teal-deep">
+                    <Icon size={24} weight="duotone" aria-hidden="true" />
                   </span>
-                  <span className="folder__label">
-                    <span className="folder__name">{nodeTitle(node)}</span>
-                    {node.type === 'folder' ? (
-                      <span className="folder__meta">
+
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-display font-bold tracking-tight text-ink-900">
+                      {nodeTitle(node)}
+                    </span>
+                    {isFolder ? (
+                      <span className="block text-sm text-ink-500">
                         {count} {count === 1 ? 'guide' : 'guides'}
                       </span>
                     ) : null}
                   </span>
+
+                  <CaretRight
+                    size={17}
+                    weight="bold"
+                    aria-hidden="true"
+                    className="shrink-0 text-ink-300 transition group-hover:translate-x-0.5 group-hover:text-teal-deep"
+                  />
                 </Link>
               </li>
             )

@@ -1,8 +1,8 @@
 import { useEffect, useId, useMemo, useRef, useState, type HTMLAttributes } from 'react'
 import { NavLink } from 'react-router-dom'
+import { CaretRight, X } from '@phosphor-icons/react'
 import { nodeTitle, type ContentNode, type FolderNode } from '../content'
 import { countGuides, routeForSegments, segmentFor } from '../tree'
-import './NavDrawer.css'
 
 interface NavDrawerProps {
   tree: ContentNode[]
@@ -22,7 +22,8 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
   // Folders on the path to the current page start open, so a reader who arrives
   // from a shared link can see where they are.
   const ancestors = useMemo(
-    () => activeSegments.slice(0, -1).map((_, index) => activeSegments.slice(0, index + 1).join('/')),
+    () =>
+      activeSegments.slice(0, -1).map((_, index) => activeSegments.slice(0, index + 1).join('/')),
     [activeSegments],
   )
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set(ancestors))
@@ -92,30 +93,35 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
     }
   }, [isDrawerOpen, onClose])
 
-  const tree$ = (
-    <div className="nav-tree">
-      {tree.length === 0 ? (
-        <p className="nav-tree__empty">No categories have been added yet.</p>
-      ) : (
-        <NodeList
-          nodes={tree}
-          parentSegments={[]}
-          depth={0}
-          activeSegments={activeSegments}
-          expanded={expanded}
-          onToggle={toggle}
-          onSelect={isSidebar ? undefined : onClose}
-        />
-      )}
-    </div>
+  const heading = (
+    <h2 id={titleId} className="text-xs font-bold tracking-[0.12em] text-ink-500 uppercase">
+      Guides
+    </h2>
   )
+
+  const tree$ =
+    tree.length === 0 ? (
+      <p className="px-4 py-3 text-base text-ink-500 italic">No categories have been added yet.</p>
+    ) : (
+      <NodeList
+        nodes={tree}
+        parentSegments={[]}
+        depth={0}
+        compact={isSidebar}
+        activeSegments={activeSegments}
+        expanded={expanded}
+        onToggle={toggle}
+        onSelect={isSidebar ? undefined : onClose}
+      />
+    )
 
   if (isSidebar) {
     return (
-      <nav className="nav nav--sidebar" aria-labelledby={titleId}>
-        <h2 className="nav__heading" id={titleId}>
-          Guides
-        </h2>
+      <nav
+        aria-labelledby={titleId}
+        className="sticky top-16 max-h-[calc(100dvh-4rem)] w-76 self-start overflow-y-auto overscroll-contain border-r border-ink-900/5 py-6 pb-16"
+      >
+        <div className="px-5 pb-2">{heading}</div>
         {tree$}
       </nav>
     )
@@ -124,34 +130,36 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
   return (
     <>
       <div
-        className={`nav__scrim${isDrawerOpen ? ' nav__scrim--visible' : ''}`}
-        onClick={onClose}
         aria-hidden="true"
+        onClick={onClose}
+        className={`fixed inset-0 z-40 bg-ink-900/45 backdrop-blur-[2px] transition-[opacity,visibility] duration-200 ${
+          isDrawerOpen ? 'visible opacity-100' : 'invisible opacity-0'
+        }`}
       />
       <div
-        className={`nav nav--drawer${isDrawerOpen ? ' nav--open' : ''}`}
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        className={`fixed inset-y-0 left-0 z-50 flex w-[min(21rem,88vw)] flex-col bg-white pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] shadow-2xl transition-transform duration-200 ease-out ${
+          isDrawerOpen ? 'translate-x-0' : '-translate-x-[102%]'
+        }`}
         // Keeps the closed drawer out of the tab order and away from screen readers.
         {...inertWhenClosed(isDrawerOpen)}
       >
-        <div className="nav__bar">
-          <h2 className="nav__heading" id={titleId}>
-            Guides
-          </h2>
+        <div className="flex min-h-16 shrink-0 items-center justify-between gap-2 border-b border-ink-900/5 pt-[env(safe-area-inset-top)] pr-2 pl-5">
+          {heading}
           <button
             type="button"
-            className="nav__close"
             onClick={onClose}
             data-drawer-initial-focus
+            className="grid size-tap place-items-center rounded-xl text-ink-500 transition hover:bg-mist hover:text-ink-900 active:bg-teal-soft"
           >
-            <span aria-hidden="true">✕</span>
+            <X size={20} weight="bold" aria-hidden="true" />
             <span className="visually-hidden">Close the menu</span>
           </button>
         </div>
-        <nav aria-labelledby={titleId} className="nav__scroll">
+        <nav aria-labelledby={titleId} className="flex-1 overflow-y-auto overscroll-contain py-2 pb-10">
           {tree$}
         </nav>
       </div>
@@ -172,6 +180,8 @@ interface NodeListProps {
   nodes: ContentNode[]
   parentSegments: string[]
   depth: number
+  /** Sidebar mode: a mouse does not need 44px rows, so the list stays scannable. */
+  compact: boolean
   activeSegments: string[]
   expanded: ReadonlySet<string>
   onToggle: (key: string) => void
@@ -179,24 +189,56 @@ interface NodeListProps {
   onSelect?: (() => void) | undefined
 }
 
+/** Shared row geometry, so folders and guides line up exactly. */
+function rowClasses(compact: boolean): string {
+  return [
+    'flex w-full items-center gap-2.5 text-left transition',
+    compact ? 'min-h-9 py-1.5 text-[0.9375rem]' : 'min-h-tap py-2.5 text-base',
+  ].join(' ')
+}
+
+function indentFor(depth: number, compact: boolean): string {
+  return `${(compact ? 1.25 : 1) + depth * 0.85}rem`
+}
+
 function NodeList(props: NodeListProps) {
-  const { nodes, parentSegments, depth } = props
+  const { nodes, parentSegments, depth, compact } = props
   return (
-    <ul className="nav-tree__list" data-depth={depth}>
+    <ul>
       {nodes.map((node) => {
         const segments = [...parentSegments, segmentFor(node)]
         return (
-          <li key={segments.join('/')} className="nav-tree__item">
+          <li
+            key={segments.join('/')}
+            // Hairlines only between top-level categories, to keep the list calm.
+            className={depth === 0 ? 'border-t border-ink-900/5 first:border-t-0' : undefined}
+          >
             {node.type === 'folder' ? (
               <FolderRow {...props} node={node} segments={segments} />
             ) : (
               <NavLink
                 to={routeForSegments(segments)}
-                className={({ isActive }) => `nav-tree__guide${isActive ? ' nav-tree__guide--active' : ''}`}
-                style={{ paddingLeft: `${0.9 + depth * 0.85}rem` }}
                 onClick={props.onSelect}
+                style={{ paddingLeft: indentFor(depth, compact), paddingRight: '1rem' }}
+                className={({ isActive }) =>
+                  `${rowClasses(compact)} ${
+                    isActive
+                      ? 'bg-teal-soft font-semibold text-teal-dark shadow-[inset_0.25rem_0_0_var(--color-teal-deep)]'
+                      : 'text-ink-700 hover:bg-mist active:bg-teal-soft'
+                  }`
+                }
               >
-                {nodeTitle(node)}
+                {({ isActive }) => (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className={`size-1.5 shrink-0 rounded-full ${
+                        isActive ? 'bg-teal-deep' : 'bg-ink-300'
+                      }`}
+                    />
+                    <span className="min-w-0">{nodeTitle(node)}</span>
+                  </>
+                )}
               </NavLink>
             )}
           </li>
@@ -207,41 +249,45 @@ function NodeList(props: NodeListProps) {
 }
 
 function FolderRow(props: NodeListProps & { node: FolderNode; segments: string[] }) {
-  const { node, segments, depth, activeSegments, expanded, onToggle } = props
+  const { node, segments, depth, compact, activeSegments, expanded, onToggle } = props
   const key = segments.join('/')
   const isOpen = expanded.has(key)
   const listId = `nav-${key.replace(/[^a-z0-9]+/gi, '-')}`
-  const contains = activeSegments.slice(0, segments.length).join('/') === key
+  const onPath = activeSegments.slice(0, segments.length).join('/') === key
   const guideCount = countGuides(node.children)
 
   return (
     <>
       <button
         type="button"
-        className={`nav-tree__folder${contains ? ' nav-tree__folder--on-path' : ''}`}
-        style={{ paddingLeft: `${0.9 + depth * 0.85}rem` }}
         aria-expanded={isOpen}
         aria-controls={listId}
         onClick={() => onToggle(key)}
+        style={{ paddingLeft: indentFor(depth, compact), paddingRight: '0.75rem' }}
+        className={`${rowClasses(compact)} font-display font-semibold hover:bg-mist active:bg-teal-soft ${
+          onPath ? 'text-teal-dark' : 'text-ink-900'
+        }`}
       >
-        <svg
-          className={`nav-tree__chevron${isOpen ? ' nav-tree__chevron--open' : ''}`}
-          viewBox="0 0 20 20"
-          width="18"
-          height="18"
+        <CaretRight
+          size={15}
+          weight="bold"
           aria-hidden="true"
-        >
-          <path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className="nav-tree__folder-label">{nodeTitle(node)}</span>
-        <span className="nav-tree__count">
+          className={`shrink-0 text-ink-300 transition-transform duration-150 ${
+            isOpen ? 'rotate-90' : ''
+          }`}
+        />
+        <span className="min-w-0 flex-1">{nodeTitle(node)}</span>
+        <span className="shrink-0 rounded-full bg-mist px-2 py-0.5 text-xs font-semibold text-ink-500 ring-1 ring-ink-900/5">
           {guideCount}
           <span className="visually-hidden"> {guideCount === 1 ? 'guide' : 'guides'}</span>
         </span>
       </button>
       <div id={listId} hidden={!isOpen}>
         {node.children.length === 0 ? (
-          <p className="nav-tree__empty" style={{ paddingLeft: `${1.75 + depth * 0.85}rem` }}>
+          <p
+            style={{ paddingLeft: `${(compact ? 1.25 : 1) + depth * 0.85 + 1.5}rem` }}
+            className="py-2 pr-4 text-sm text-ink-500 italic"
+          >
             No guides in this folder yet
           </p>
         ) : (

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
+import { Asclepius, List } from '@phosphor-icons/react'
 import { MANIFEST_PATH, nodeTitle, type Manifest } from './content'
 import { locate, segmentsFromSplat, WIKI_ROOT, type Located } from './tree'
 import { useManifest } from './useManifest'
@@ -9,7 +10,6 @@ import { EmptyState } from './components/EmptyState'
 import { FolderView } from './components/FolderView'
 import { GuideView } from './components/GuideView'
 import { NavDrawer } from './components/NavDrawer'
-import './App.css'
 
 const SITE_NAME = 'EPR Support Wiki'
 
@@ -29,43 +29,59 @@ export default function App() {
   }, [location.pathname, location.hash])
 
   const activeSegments = segmentsFromSplat(
-    location.pathname.startsWith(`${WIKI_ROOT}/`) ? location.pathname.slice(WIKI_ROOT.length + 1) : '',
+    location.pathname.startsWith(`${WIKI_ROOT}/`)
+      ? location.pathname.slice(WIKI_ROOT.length + 1)
+      : '',
   )
 
   return (
-    <div className={`shell${isSidebar ? ' shell--sidebar' : ''}`}>
-      <a className="skip-link" href="#main">
+    <div className="min-h-dvh">
+      {/* Decorative backdrop: layered gradients plus a dissolving dot grid.
+          `pointer-events-none` keeps it from swallowing taps. */}
+      <div aria-hidden="true" className="aurora pointer-events-none fixed inset-0 -z-10" />
+      <div aria-hidden="true" className="halftone pointer-events-none fixed inset-0 -z-10" />
+
+      <a
+        href="#main"
+        className="absolute top-0 left-0 z-60 -translate-y-full rounded-br-xl bg-ink-900 px-4 py-3 font-semibold text-white focus-visible:translate-y-0"
+      >
         Skip to the guide
       </a>
 
-      <header className="appbar">
+      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 bg-white/80 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md lg:px-5">
         {/* No menu button until there is a tree behind it — a button that opens
             nothing is worse than no button. */}
         {!isSidebar && manifestState.status === 'ready' ? (
           <button
             type="button"
-            className="appbar__menu"
             onClick={() => setDrawerOpen(true)}
             aria-expanded={drawerOpen}
+            className="inline-flex min-h-tap items-center gap-1.5 rounded-xl px-2.5 font-semibold text-ink-700 transition hover:bg-mist hover:text-ink-900 active:bg-teal-soft"
           >
-            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-              <path
-                d="M4 7h16M4 12h16M4 17h16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="appbar__menu-label">Menu</span>
+            <List size={22} weight="bold" aria-hidden="true" />
+            Menu
           </button>
         ) : null}
-        <Link className="appbar__brand" to={WIKI_ROOT}>
-          {SITE_NAME}
+
+        {/* Left-aligned beside the menu button rather than optically centred:
+            centring needs a balancing spacer, and at 320px that spacer squeezes
+            the title down to a few clipped characters. */}
+        <Link
+          to={WIKI_ROOT}
+          className="flex min-w-0 flex-1 items-center gap-2 rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 lg:px-0 lg:text-xl"
+        >
+          <Asclepius
+            size={26}
+            weight="duotone"
+            aria-hidden="true"
+            className="shrink-0 text-teal-deep"
+          />
+          <span className="truncate">{SITE_NAME}</span>
         </Link>
+
       </header>
 
-      <div className="shell__body">
+      <div className={isSidebar ? 'grid grid-cols-[19rem_minmax(0,1fr)] items-start' : undefined}>
         {manifestState.status === 'ready' ? (
           <NavDrawer
             tree={manifestState.manifest.tree}
@@ -76,20 +92,27 @@ export default function App() {
           />
         ) : null}
 
-        <main className="main" id="main">
-          <div className="main__inner">
+        <main id="main" className="min-w-0">
+          <div className="mx-auto max-w-[72ch] px-4 pb-24 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 lg:px-10">
             {manifestState.status === 'loading' ? (
-              <p className="main__loading" role="status">
+              <p role="status" className="py-10 text-ink-500">
                 Loading the list of guides…
               </p>
             ) : manifestState.status === 'error' ? (
-              <EmptyState title="Content not available" tone="problem" detail={manifestState.error.url}>
+              <EmptyState
+                title="Content not available"
+                tone="problem"
+                detail={manifestState.error.url}
+              >
                 <p>{manifestState.error.message}</p>
                 <p>
                   This site reads its guides from a file called <code>{MANIFEST_PATH}</code> on the
                   web server. Until that file is in place and readable, no guides can be shown.
                 </p>
-                <p>Please pass this on to the IT support team — there is nothing to fix on your device.</p>
+                <p>
+                  Please pass this on to the IT support team — there is nothing to fix on your
+                  device.
+                </p>
               </EmptyState>
             ) : (
               <WikiRoutes manifest={manifestState.manifest} />
@@ -121,7 +144,7 @@ function WikiHome({ manifest }: { manifest: Manifest }) {
         title="All guides"
         segments={[]}
         nodes={manifest.tree}
-        intro="Choose a category to see the guides inside it."
+        intro="Clear, step-by-step guides for everyday tasks in the EPR system. Choose a category to begin."
       />
     </>
   )
@@ -161,7 +184,9 @@ function UnknownPage() {
         renamed, moved, or withdrawn.
       </p>
       <p>
-        <Link to={WIKI_ROOT}>Go to the list of all guides</Link>
+        <Link to={WIKI_ROOT} className="font-medium text-teal-dark underline underline-offset-4">
+          Go to the list of all guides
+        </Link>
       </p>
     </EmptyState>
   )

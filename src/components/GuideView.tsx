@@ -1,7 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { ContentError, contentUrl, fetchGuide } from '../content'
 import { EmptyState } from './EmptyState'
-import './GuideView.css'
 
 // The markdown parser is the heaviest part of the app and is not needed to draw
 // the shell or the navigation, so it is fetched only when a guide is opened.
@@ -68,7 +67,7 @@ export function GuideView({ contentPath, title }: GuideViewProps) {
   }
 
   return (
-    <article className="guide">
+    <article className="animate-fade-up pb-4">
       <Suspense fallback={<GuideSkeleton title={title} />}>
         <MarkdownRenderer markdown={state.markdown} guidePath={contentPath} />
       </Suspense>
@@ -79,16 +78,21 @@ export function GuideView({ contentPath, title }: GuideViewProps) {
 /** Shows the known title immediately so the page never looks blank. */
 function GuideSkeleton({ title }: { title: string }) {
   return (
-    <div className="guide-skeleton">
-      <h1 className="guide-skeleton__title">{title}</h1>
-      <p className="guide-skeleton__status" role="status">
+    <div className="pt-2">
+      <h1 className="font-display text-3xl leading-tight font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+        {title}
+      </h1>
+      <p role="status" className="mt-3 text-base text-ink-500">
         Loading this guide…
       </p>
-      <div className="guide-skeleton__lines" aria-hidden="true">
-        <span style={{ width: '96%' }} />
-        <span style={{ width: '88%' }} />
-        <span style={{ width: '92%' }} />
-        <span style={{ width: '64%' }} />
+      <div aria-hidden="true" className="mt-8 space-y-3.5">
+        {['96%', '88%', '92%', '64%'].map((width) => (
+          <span
+            key={width}
+            style={{ width }}
+            className="block h-3.5 animate-pulse rounded-full bg-teal-soft"
+          />
+        ))}
       </div>
     </div>
   )

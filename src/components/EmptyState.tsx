@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import './EmptyState.css'
+import { Info, WarningCircle } from '@phosphor-icons/react'
 
 interface EmptyStateProps {
   /** Plain-English heading. No jargon, no error codes. */
@@ -16,14 +16,35 @@ interface EmptyStateProps {
  * Deliberately never invents replacement content for a missing file.
  */
 export function EmptyState({ title, children, tone = 'neutral', detail }: EmptyStateProps) {
+  const isProblem = tone === 'problem'
+  const Icon = isProblem ? WarningCircle : Info
+
   return (
-    <div className={`empty-state empty-state--${tone}`} role={tone === 'problem' ? 'alert' : undefined}>
-      <h2 className="empty-state__title">{title}</h2>
-      {children ? <div className="empty-state__body">{children}</div> : null}
+    <div
+      className={`animate-fade-up my-6 rounded-2xl p-5 shadow-sm ring-1 backdrop-blur sm:p-6 ${
+        isProblem ? 'bg-amber-soft/70 ring-amber-deep/20' : 'bg-white/80 ring-ink-900/5'
+      }`}
+      role={isProblem ? 'alert' : undefined}
+    >
+      <div className="flex items-start gap-3.5">
+        <span
+          className={`grid size-11 shrink-0 place-items-center rounded-xl ${
+            isProblem ? 'bg-white/80 text-amber-deep' : 'bg-teal-soft text-teal-deep'
+          }`}
+        >
+          <Icon size={26} weight="duotone" aria-hidden="true" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="font-display text-xl font-bold tracking-tight text-ink-900">{title}</h2>
+          {children ? <div className="mt-2 space-y-3 text-ink-700">{children}</div> : null}
+        </div>
+      </div>
+
       {detail ? (
-        <p className="empty-state__detail">
-          <span className="empty-state__detail-label">For IT support:</span>{' '}
-          <code>{detail}</code>
+        <p className="mt-5 border-t border-ink-900/10 pt-3.5 text-sm leading-relaxed text-ink-500">
+          <span className="font-semibold">For IT support:</span>{' '}
+          {/* Long URLs must wrap rather than widen the page. */}
+          <code className="break-all font-mono text-[0.95em]">{detail}</code>
         </p>
       ) : null}
     </div>

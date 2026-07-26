@@ -2,6 +2,7 @@ import { createReadStream, statSync } from 'node:fs'
 import { extname, join, normalize, resolve, sep } from 'node:path'
 import { defineConfig, type Plugin, type Connect } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
 const CONTENT_DIR = resolve(process.cwd(), 'content')
 
@@ -120,7 +121,7 @@ export default defineConfig({
   // Relative base: the built app works from the webroot *or* any subfolder
   // without a rebuild. Combined with hash routing, no host config is needed.
   base: './',
-  plugins: [react(), serveContentDir()],
+  plugins: [react(), tailwindcss(), serveContentDir()],
   build: {
     target: 'es2020',
     // Keep the markdown renderer out of the initial payload (see App.tsx).

@@ -199,19 +199,31 @@ src/
 │   ├── FolderView.tsx           Category listing / home page
 │   ├── Breadcrumbs.tsx          Truncating trail
 │   └── EmptyState.tsx           Loading / empty / error states
-└── styles/global.css            Design tokens, reset, base typography
+└── styles/global.css            Tailwind entry: theme tokens, base, utilities
 scripts/
 └── generate-manifest.mjs        Admin-time manifest generator
 ```
 
+Styling is **Tailwind CSS v4** via `@tailwindcss/vite`. There is no `tailwind.config.js` — v4 is
+configured in CSS, so the palette, fonts and keyframes all live in the `@theme` block at the top
+of `src/styles/global.css`. Rendered guide content uses `@tailwindcss/typography`, customised in
+`MarkdownRenderer.tsx`.
+
 Design notes worth knowing before changing things:
 
-- **Mobile-first is structural, not cosmetic.** Every stylesheet targets ~375px first; larger
-  screens are `min-width` queries only. There are no `max-width` overrides to unpick.
-- **No webfonts.** A locked-down hospital device may not reach a font CDN, so headings use a
-  serif system stack and body text the platform UI face. Nothing blocks on a network font.
-- **The markdown renderer is a lazy chunk** (~50 kB gzipped) so the shell and navigation load
+- **Mobile-first is structural, not cosmetic.** Styles target ~375px first; larger screens are
+  `sm:`/`lg:` (min-width) variants only. There are no `max-width` overrides to unpick.
+- **Sans-serif throughout:** Bricolage Grotesque for headings, Figtree for body text.
+- **Fonts are self-hosted, not CDN-loaded.** They come from `@fontsource-variable/*` npm packages
+  and are emitted into `dist/assets/`, so a locked-down hospital device that cannot reach
+  fonts.googleapis.com still renders correctly and nothing blocks on an external request.
+- **Icons are tree-shaken SVGs** from `@phosphor-icons/react` (duotone), imported one at a time.
+  The icon *font* package is 46 MB unpacked — do not swap to it for convenience.
+- **The markdown renderer is a lazy chunk** (~52 kB gzipped) so the shell and navigation load
   first on a slow connection.
+- **Entrance animations use `animation-fill-mode: both`**, so content starts at `opacity: 0`.
+  `prefers-reduced-motion` collapses every duration to 0.01ms, which lands on the finished state
+  immediately — do not remove that rule, or reduced-motion users would see nothing.
 - **Videos use `preload="metadata"`** — nothing but the header downloads until a reader presses
   play. `playsinline` stops iOS forcing fullscreen.
 - **Guide content is sanitised** with `rehype-sanitize`. Admin-authored content is still
@@ -221,6 +233,7 @@ Design notes worth knowing before changing things:
 
 ### Verified
 
-Checked at 320, 375, 768 and 1280px with zero horizontal page scroll; all touch targets ≥44px;
+Checked at 320, 375, 768 and 1280px with zero horizontal page scroll; all standalone touch
+targets ≥44px (inline links in running text are 26px, per the WCAG 2.5.8 inline exception);
 drawer focus-trapped with Escape to close; deep links loading directly from a plain static
 server, both at a webroot and from a subfolder.
