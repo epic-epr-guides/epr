@@ -22,10 +22,13 @@
  */
 
 import { readFile, readdir, writeFile } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
 import { join, relative, resolve } from 'node:path'
 
 const CONTENT_DIR = resolve(process.cwd(), 'content')
 const MANIFEST_FILE = join(CONTENT_DIR, 'manifest.json')
+/** Media flagged as unsafe to publish until replaced. See §Unsafe media in the README. */
+const NEEDS_REPLACING_FILE = join(CONTENT_DIR, '.needs-replacing.json')
 
 /** Extensions that are guides. Everything else is either media or ignored. */
 const GUIDE_EXTENSION = '.md'
@@ -142,6 +145,39 @@ async function walk(directory, prefix, existingTitles, warnings) {
   return [...folders, ...guides]
 }
 
+/**
+ * Checks media listed in `.needs-replacing.json` and reports anything still
+ * byte-identical to the flagged original. Sits in the manifest step because that
+ * is the one command an admin cannot skip when adding content — a note in a
+ * README is too easy to walk past when the risk is publishing patient data.
+ *
+ * Once a file is genuinely replaced its hash changes and it stops being
+ * reported, so the check needs no manual bookkeeping.
+ */
+async function checkFlaggedMedia() {
+  let list
+  try {
+    list = JSON.parse(await readFile(NEEDS_REPLACING_FILE, 'utf8'))
+  } catch {
+    return [] // No list, or unreadable — nothing to check.
+  }
+
+  const outstanding = []
+  for (const entry of list.files ?? []) {
+    if (typeof entry?.path !== 'string') continue
+    try {
+      const bytes = await readFile(join(CONTENT_DIR, entry.path))
+      const hash = createHash('sha1').update(bytes).digest('hex')
+      if (typeof entry.sha1 === 'string' && hash.startsWith(entry.sha1)) {
+        outstanding.push(entry)
+      }
+    } catch {
+      // Deleted counts as dealt with.
+    }
+  }
+  return outstanding
+}
+
 function countGuides(nodes) {
   return nodes.reduce(
     (total, node) => total + (node.type === 'guide' ? 1 : countGuides(node.children)),
@@ -176,6 +212,28 @@ async function main() {
     console.log('\nWorth fixing:')
     for (const warning of warnings) console.log(`  - ${warning}`)
   }
+  const flagged = await checkFlaggedMedia()
+  if (flagged.length > 0) {
+    const line = '='.repeat(72)
+    console.log(`\n${line}`)
+    console.log('  DO NOT UPLOAD YET')
+    console.log(line)
+    console.log(`  ${flagged.length} image${flagged.length === 1 ? '' : 's'} still contain${flagged.length === 1 ? 's' : ''} identifiable patient data.`)
+    console.log('  This site has no authentication: uploading publishes them to anyone')
+    console.log('  who can reach the URL.\n')
+    for (const entry of flagged) {
+      console.log(`  - content/${entry.path}`)
+      if (entry.contains) console.log(`      ${entry.contains}`)
+    }
+    console.log('\n  Replace each with a screenshot from a training/PLAY environment using')
+    console.log('  fictional patients, then remove its entry from')
+    console.log('  content/.needs-replacing.json and run this again.')
+    console.log(`${line}\n`)
+    // Non-zero exit so a scripted or CI-style run cannot sail past this.
+    process.exitCode = 2
+    return
+  }
+
   console.log('\nNow upload the whole content folder to the web server, overwriting what is there.')
 }
 

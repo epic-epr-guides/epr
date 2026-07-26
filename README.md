@@ -48,6 +48,7 @@ npm run dev
 | --- | --- |
 | `npm run dev` | Dev server, with `content/` served from the project root at `/content/`. |
 | `npm run manifest` | Regenerates `content/manifest.json` from the local `content/` folder. |
+| `npm run import:docx` | Converts a Word document into a guide plus extracted images. |
 | `npm run build` | Builds the static bundle into `dist/`. Type-checks first. |
 | `npm run preview` | Serves the built bundle locally for a final check before deploying. |
 
@@ -71,6 +72,55 @@ runs it and does not need Node.js installed — it only serves static files.
 There is a full authoring reference in the seed content itself:
 [Formatting Reference](content/02-for-administrators/formatting-reference.md) and
 [Images and Video](content/02-for-administrators/media-examples/images-and-video.md).
+
+### Importing from Word
+
+```bash
+npm run import:docx -- "path/to/guide.docx" --into 03-my-category --names "first-shot,second-shot"
+```
+
+Add `--dry-run` to print the Markdown without writing anything — always worth doing first.
+
+It converts text **verbatim**, including typos, and does not summarise or tidy. The only
+structural change is promoting the document's own bold, larger-than-body paragraphs to `##`
+headings; that text is matched, never retyped. Images are extracted to `media/`, deduplicated by
+content hash (Word often stores the same picture two or three times), and named from `--names` in
+first-appearance order.
+
+What it cannot carry across, and will tell you about:
+
+- **Text-box callouts lose their arrows.** Word guides often label a screenshot with floating
+  text boxes joined by arrow shapes. The words survive as ordinary paragraphs, but a label like
+  "click here" no longer points at anything. Check every converted callout still makes sense.
+- **SmartArt, WordArt and embedded objects** are dropped.
+- **Alt text.** Word's auto-generated "A screenshot of a computer…" is discarded rather than
+  published as if it were real alt text, so imported images start with empty `alt`. Add
+  descriptions if screen-reader users need them.
+- `.emf`/`.wmf` images (screenshots pasted straight from Windows) cannot be displayed by
+  browsers and will need re-exporting as PNG.
+
+### Media that is not safe to publish yet
+
+`content/.needs-replacing.json` lists imported media known to contain identifiable data. On every
+run, `npm run manifest` re-hashes each listed file and **fails with exit code 2** while any of them
+is still byte-identical to the flagged original:
+
+```
+========================================================================
+  DO NOT UPLOAD YET
+========================================================================
+```
+
+Replace the file with a capture from a training/PLAY environment using fictional patients, then
+delete its entry from the list. The check is by content hash, so a genuine replacement clears
+itself with no bookkeeping.
+
+Flagged files are also listed in `.gitignore`. That is deliberate: committing them would put the
+data in git history permanently, where it would survive replacing the file and travel with every
+clone. Remove both the `.gitignore` lines and the JSON entry once the images are clean.
+
+> This matters because the site has **no authentication**. There is no "internal only" —
+> uploading a file publishes it to anyone who can reach the URL.
 
 ### Prefixing names to control order
 

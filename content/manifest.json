@@ -46,6 +46,18 @@
           "title": "Formatting Reference"
         }
       ]
+    },
+    {
+      "type": "folder",
+      "name": "03-haematology-oncology",
+      "title": "Haematology/Oncology",
+      "children": [
+        {
+          "type": "guide",
+          "name": "haematology-oncology-epic-inpatient-ward-list-guide.md",
+          "title": "Haematology/Oncology EPIC Inpatient Ward List Guide"
+        }
+      ]
     }
   ]
 }
