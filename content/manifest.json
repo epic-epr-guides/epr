@@ -49,13 +49,13 @@
     },
     {
       "type": "folder",
-      "name": "03-haematology-oncology",
-      "title": "Haematology/Oncology",
+      "name": "03-epic",
+      "title": "EPIC",
       "children": [
         {
           "type": "guide",
-          "name": "haematology-oncology-epic-inpatient-ward-list-guide.md",
-          "title": "Haematology/Oncology EPIC Inpatient Ward List Guide"
+          "name": "inpatient-ward-list-guide.md",
+          "title": "Inpatient Ward List Guide"
         }
       ]
     }

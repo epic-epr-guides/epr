@@ -6,9 +6,10 @@ dist/
 # replacing the files, and would travel with any clone or push. Delete these
 # lines once the images have been replaced with training-environment captures.
 # Tracked in content/.needs-replacing.json; `npm run manifest` re-checks by hash.
-content/03-haematology-oncology/media/ward-list-example.png
-content/03-haematology-oncology/media/handover-tool.png
-content/03-haematology-oncology/media/handover-search.png
+content/03-epic/media/ward-list-example.png
+content/03-epic/media/handover-tool.png
+content/03-epic/media/handover-tool-with-arrows.png
+content/03-epic/media/handover-search.png
 *.local
 .DS_Store
 Thumbs.db

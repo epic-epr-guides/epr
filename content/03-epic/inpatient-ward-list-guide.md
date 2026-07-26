@@ -1,4 +1,4 @@
-# Haematology/Oncology EPIC Inpatient Ward List Guide
+# Inpatient Ward List Guide
 
 Welcome to the Haematology/Oncology Team at Guy’s and St Thomas Hospital. This quick guide is show you how to access and use the EPIC Inpatient Ward list and FAQ
 
