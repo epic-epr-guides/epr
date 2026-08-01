@@ -24,12 +24,17 @@
   --color-ink-500: #4d707a;
   --color-ink-300: #93aeb5;
 
-  --color-teal-soft: #e4f2f1;
-  --color-teal-mid: #9fd3cd;
-  --color-teal-deep: #0e7c72;
-  --color-teal-dark: #0a5d56;
+  /* Accent family, all hue 188 so they read as one colour.
+     `mid` is the brand colour as supplied. At 1.93:1 on white it cannot carry
+     text or icons, so it is used for washes, rings and the backdrop, and the
+     two darker steps below — same hue, same family — do the work that needs
+     contrast. Measured against white: deep 6.5:1, dark 9.0:1. */
+  --color-teal-soft: #e6f2f4;
+  --color-teal-mid: #90c3cb;
+  --color-teal-deep: #2a666f;
+  --color-teal-dark: #1e4f57;
 
-  --color-mist: #f6faf9;
+  --color-mist: #f4f9fb;
 
   --color-amber-soft: #fdf0dc;
   --color-amber-deep: #b97324;
@@ -152,13 +157,15 @@
 
 @utility aurora {
   background-image:
-    radial-gradient(60% 80% at 15% 20%, rgb(14 124 114 / 22%), transparent 60%),
-    radial-gradient(50% 70% at 85% 30%, rgb(55 138 221 / 16%), transparent 60%),
-    radial-gradient(70% 80% at 50% 100%, rgb(159 211 205 / 30%), transparent 65%);
+    /* The brand colour is at its most useful here: large soft washes are where a
+       light tint actually reads. */
+    radial-gradient(60% 80% at 15% 20%, rgb(144 195 203 / 55%), transparent 60%),
+    radial-gradient(50% 70% at 85% 30%, rgb(55 138 221 / 14%), transparent 60%),
+    radial-gradient(70% 80% at 50% 100%, rgb(144 195 203 / 42%), transparent 65%);
 }
 
 @utility halftone {
-  background-image: radial-gradient(rgb(14 124 114 / 28%) 1.5px, transparent 1.5px);
+  background-image: radial-gradient(rgb(42 102 111 / 22%) 1.5px, transparent 1.5px);
   background-size: 18px 18px;
   mask-image: linear-gradient(to bottom, black, transparent 70%);
   -webkit-mask-image: linear-gradient(to bottom, black, transparent 70%);
