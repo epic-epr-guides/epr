@@ -3,49 +3,57 @@
   "tree": [
     {
       "type": "folder",
-      "path": "getting-started",
-      "title": "Getting Started",
-      "children": [
-        {
-          "type": "guide",
-          "path": "welcome.md",
-          "title": "Welcome"
-        },
-        {
-          "type": "guide",
-          "path": "finding-a-guide.md",
-          "title": "Finding a Guide"
-        }
-      ]
+      "path": "discharge",
+      "title": "Discharge",
+      "children": []
     },
     {
       "type": "folder",
-      "path": "for-administrators",
-      "title": "For Administrators",
-      "children": [
-        {
-          "type": "guide",
-          "path": "adding-a-guide.md",
-          "title": "Adding a Guide"
-        },
-        {
-          "type": "guide",
-          "path": "formatting-reference.md",
-          "title": "Formatting Reference"
-        },
-        {
-          "type": "folder",
-          "path": "media-examples",
-          "title": "Media Examples",
-          "children": [
-            {
-              "type": "guide",
-              "path": "images-and-video.md",
-              "title": "Images and Video"
-            }
-          ]
-        }
-      ]
+      "path": "documentation",
+      "title": "Documentation",
+      "children": []
+    },
+    {
+      "type": "folder",
+      "path": "handover",
+      "title": "Handover",
+      "children": []
+    },
+    {
+      "type": "folder",
+      "path": "hospital-course",
+      "title": "Hospital Course",
+      "children": []
+    },
+    {
+      "type": "folder",
+      "path": "imaging",
+      "title": "Imaging",
+      "children": []
+    },
+    {
+      "type": "folder",
+      "path": "order",
+      "title": "Order",
+      "children": []
+    },
+    {
+      "type": "folder",
+      "path": "patient-lists",
+      "title": "Patient Lists",
+      "children": []
+    },
+    {
+      "type": "folder",
+      "path": "patient-summary",
+      "title": "Patient Summary",
+      "children": []
+    },
+    {
+      "type": "folder",
+      "path": "results",
+      "title": "Results",
+      "children": []
     },
     {
       "type": "folder",

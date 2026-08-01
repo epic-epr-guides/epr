@@ -36,7 +36,7 @@ export function FolderView({ title, nodes, segments, intro }: FolderViewProps) {
             isHome ? 'mt-7 text-4xl leading-tight sm:text-5xl' : 'text-3xl leading-tight sm:text-4xl'
           }`}
         >
-          {isHome ? 'EPR Support Wiki' : title}
+          {title}
         </h1>
 
         {intro ? (

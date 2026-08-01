@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+# Every push to main rebuilds and republishes the site. workflow_dispatch lets
+# you re-run it by hand from the Actions tab without pushing anything.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege: read the repo, and mint the token deploy-pages needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race. `cancel-in-progress: false` means a queued run
+# waits its turn rather than being dropped, so the last push always wins.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # `npm ci` installs exactly what package-lock.json pins, and fails if the
+      # lockfile is out of step with package.json.
+      - name: Install dependencies
+        run: npm ci
+
+      # Rebuilds content/manifest.json from whatever is in content/, so the
+      # navigation can never drift from the files actually committed.
+      - name: Regenerate the content manifest
+        run: npm run manifest
+
+      # Type-checks first (see the build script), then bundles into dist/.
+      - name: Build the app
+        run: npm run build
+
+      # The site is dist/ with content/ dropped in beside index.html — the same
+      # layout as a manual upload. Kept as an explicit assembly step so what
+      # gets published is obvious from the log.
+      - name: Assemble the site
+        run: |
+          mkdir -p _site
+          cp -r dist/. _site/
+          cp -r content _site/content
+          # Deploying via Actions skips Jekyll anyway; this makes that explicit
+          # and stops any future underscore-prefixed file being dropped.
+          touch _site/.nojekyll
+          echo "--- publishing ---"
+          find _site -maxdepth 2 -not -path '*/assets/*' | sort
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

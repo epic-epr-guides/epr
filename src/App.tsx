@@ -11,7 +11,7 @@ import { FolderView } from './components/FolderView'
 import { GuideView } from './components/GuideView'
 import { NavDrawer } from './components/NavDrawer'
 
-const SITE_NAME = 'EPR Support Wiki'
+const SITE_NAME = 'EPIC EPR Support Guide'
 
 export default function App() {
   const manifestState = useManifest()
@@ -140,8 +140,10 @@ function WikiHome({ manifest }: { manifest: Manifest }) {
   return (
     <>
       <Breadcrumbs trail={[]} />
+      {/* The home page heading is the site name itself, so it is passed in
+          rather than hard-coded a second time inside FolderView. */}
       <FolderView
-        title="All guides"
+        title={SITE_NAME}
         segments={[]}
         nodes={manifest.tree}
         intro="Clear, step-by-step guides for everyday tasks in the EPR system. Choose a category to begin."

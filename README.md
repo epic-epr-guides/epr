@@ -1,4 +1,4 @@
-# EPR Support Wiki
+# EPIC EPR Support Guide
 
 A mobile-first wiki that renders step-by-step support guides for an Electronic Patient Record
 (EPR) system. Guides are plain Markdown files; the folder structure they sit in becomes the
@@ -6,7 +6,7 @@ site's navigation.
 
 **Proof of concept.** No authentication, no search, no server-side code.
 
-- **Readers** need nothing but a browser. Start at [Welcome](content/getting-started/welcome.md).
+- **Readers** need nothing but a browser — open the site and pick a category.
 - **Content maintainers** want [Adding content](#adding-content) below.
 - **Whoever deploys it** wants [Deploying](#deploying).
 
@@ -27,8 +27,8 @@ manifest; each `.md` file is fetched on demand when a reader opens it.
 ├── assets/             ← built JS/CSS
 └── content/            ← everything a maintainer touches
     ├── manifest.json   ← the folder tree (generated, or hand-edited)
-    ├── getting-started/
-    │   └── welcome.md
+    ├── patient-lists/
+    │   └── finding-your-ward-list.md
     └── appointments/
         ├── book-an-appointment.md
         └── media/
@@ -69,9 +69,34 @@ runs it and does not need Node.js installed — it only serves static files.
 5. Upload the whole `content/` folder to the web server, **overwriting** what is there.
 6. Reload the site.
 
-There is a full authoring reference in the seed content itself:
-[Formatting Reference](content/for-administrators/formatting-reference.md) and
-[Images and Video](content/for-administrators/media-examples/images-and-video.md).
+### Creating a category
+
+A folder inside `content/` is a category. It shows in the navigation as soon as it exists — even
+with no guides in it yet, where it reads "No guides in this folder yet". A folder named `media` is
+the one exception: it is treated as the images and video for the guides beside it, never as a
+category.
+
+Git does not track empty folders, so each empty category holds a `.gitkeep` file. Delete that once
+the folder has a real guide in it.
+
+### Formatting a guide
+
+Markdown, with a single `#` heading at the top for the title. Numbered steps, bullets, tables,
+`**bold**` for the exact thing to tap, backticks for values to type. Images and video use relative
+links: `![The search screen](./media/search.png)`; a link ending `.mp4`, `.webm` or `.ogv` becomes
+a video player. Link between guides with the real file name including `.md` and it navigates
+in-app rather than downloading.
+
+For something that needs to stand out, a marker on the first line of a blockquote makes a yellow
+alert box:
+
+```markdown
+> [!NOTE]
+> Keep the summary short so the list stays readable when printed.
+```
+
+`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]` all work — Note and Tip get an
+information icon, the rest a warning icon. The marker itself is never displayed.
 
 ### Importing from Word
 
@@ -98,29 +123,6 @@ What it cannot carry across, and will tell you about:
   descriptions if screen-reader users need them.
 - `.emf`/`.wmf` images (screenshots pasted straight from Windows) cannot be displayed by
   browsers and will need re-exporting as PNG.
-
-### Media that is not safe to publish yet
-
-`content/.needs-replacing.json` lists imported media known to contain identifiable data. On every
-run, `npm run manifest` re-hashes each listed file and **fails with exit code 2** while any of them
-is still byte-identical to the flagged original:
-
-```
-========================================================================
-  DO NOT UPLOAD YET
-========================================================================
-```
-
-Replace the file with a capture from a training/PLAY environment using fictional patients, then
-delete its entry from the list. The check is by content hash, so a genuine replacement clears
-itself with no bookkeeping.
-
-Flagged files are also listed in `.gitignore`. That is deliberate: committing them would put the
-data in git history permanently, where it would survive replacing the file and travel with every
-clone. Remove both the `.gitignore` lines and the JSON entry once the images are clean.
-
-> This matters because the site has **no authentication**. There is no "internal only" —
-> uploading a file publishes it to anyone who can reach the URL.
 
 ### Controlling the order things appear in
 

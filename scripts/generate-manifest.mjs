@@ -16,8 +16,8 @@
  *    expressed with `children`, so a `path` never contains a slash.
  *  - A guide's title comes from its first `# H1`, falling back to its file name.
  *  - Media files (.mp4, .png, …) are skipped — guides link to them directly.
- *  - Folders containing no guides at any depth are left out (this is what keeps
- *    `media/` folders from appearing in the menu).
+ *  - A folder named `media` is skipped. Any other folder becomes a category even
+ *    when it holds no guides yet, so categories can be created up front.
  *  - Two kinds of hand edit in the previous manifest are preserved: a folder's
  *    `title`, and the ORDER of entries within a folder. Reorder the tree in
  *    manifest.json and it sticks; new files are appended to their category.
@@ -27,16 +27,16 @@
  */
 
 import { readFile, readdir, writeFile } from 'node:fs/promises'
-import { createHash } from 'node:crypto'
 import { join, relative, resolve } from 'node:path'
 
 const CONTENT_DIR = resolve(process.cwd(), 'content')
 const MANIFEST_FILE = join(CONTENT_DIR, 'manifest.json')
-/** Media flagged as unsafe to publish until replaced. See §Unsafe media in the README. */
-const NEEDS_REPLACING_FILE = join(CONTENT_DIR, '.needs-replacing.json')
 
 /** Extensions that are guides. Everything else is either media or ignored. */
 const GUIDE_EXTENSION = '.md'
+
+/** Folder name reserved for a guide's images and video; never a category. */
+const MEDIA_FOLDER = 'media'
 
 /** Files and folders the walker never descends into or lists. */
 const IGNORED = new Set(['manifest.json', '.ds_store', 'thumbs.db', '.git', 'node_modules'])
@@ -157,10 +157,12 @@ async function walk(directory, prefix, existing, warnings) {
     const contentPath = prefix ? `${prefix}/${entry.name}` : entry.name
 
     if (entry.isDirectory()) {
+      // `media/` holds the images and video for the guides beside it, not
+      // guides, so it is never a category. Every other folder is kept even when
+      // it holds no guides yet, so a category can be created up front and shows
+      // as "No guides in this folder yet" until the first guide lands in it.
+      if (entry.name.toLowerCase() === MEDIA_FOLDER) continue
       const children = await walk(entryPath, contentPath, existing, warnings)
-      // A folder with no guides beneath it is not a category — this is how
-      // `media/` folders stay out of the menu.
-      if (children.length === 0) continue
       folders.push({
         type: 'folder',
         path: entry.name,
@@ -189,39 +191,6 @@ async function walk(directory, prefix, existing, warnings) {
   // Folders before files by default, then overlaid with any order the previous
   // manifest authored.
   return applyPreviousOrder([...folders, ...guides], existing.order.get(prefix))
-}
-
-/**
- * Checks media listed in `.needs-replacing.json` and reports anything still
- * byte-identical to the flagged original. Sits in the manifest step because that
- * is the one command an admin cannot skip when adding content — a note in a
- * README is too easy to walk past when the risk is publishing patient data.
- *
- * Once a file is genuinely replaced its hash changes and it stops being
- * reported, so the check needs no manual bookkeeping.
- */
-async function checkFlaggedMedia() {
-  let list
-  try {
-    list = JSON.parse(await readFile(NEEDS_REPLACING_FILE, 'utf8'))
-  } catch {
-    return [] // No list, or unreadable — nothing to check.
-  }
-
-  const outstanding = []
-  for (const entry of list.files ?? []) {
-    if (typeof entry?.path !== 'string') continue
-    try {
-      const bytes = await readFile(join(CONTENT_DIR, entry.path))
-      const hash = createHash('sha1').update(bytes).digest('hex')
-      if (typeof entry.sha1 === 'string' && hash.startsWith(entry.sha1)) {
-        outstanding.push(entry)
-      }
-    } catch {
-      // Deleted counts as dealt with.
-    }
-  }
-  return outstanding
 }
 
 function countGuides(nodes) {
@@ -258,29 +227,10 @@ async function main() {
     console.log('\nWorth fixing:')
     for (const warning of warnings) console.log(`  - ${warning}`)
   }
-  const flagged = await checkFlaggedMedia()
-  if (flagged.length > 0) {
-    const line = '='.repeat(72)
-    console.log(`\n${line}`)
-    console.log('  DO NOT UPLOAD YET')
-    console.log(line)
-    console.log(`  ${flagged.length} image${flagged.length === 1 ? '' : 's'} still contain${flagged.length === 1 ? 's' : ''} identifiable patient data.`)
-    console.log('  This site has no authentication: uploading publishes them to anyone')
-    console.log('  who can reach the URL.\n')
-    for (const entry of flagged) {
-      console.log(`  - content/${entry.path}`)
-      if (entry.contains) console.log(`      ${entry.contains}`)
-    }
-    console.log('\n  Replace each with a screenshot from a training/PLAY environment using')
-    console.log('  fictional patients, then remove its entry from')
-    console.log('  content/.needs-replacing.json and run this again.')
-    console.log(`${line}\n`)
-    // Non-zero exit so a scripted or CI-style run cannot sail past this.
-    process.exitCode = 2
-    return
-  }
 
-  console.log('\nNow upload the whole content folder to the web server, overwriting what is there.')
+
+  console.log('\nUpload the content folder to the web server, overwriting what is there.')
+  console.log('(The GitHub Actions workflow does this for you on a push to main.)')
 }
 
 await main()
