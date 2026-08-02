@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { Asclepius, List } from '@phosphor-icons/react'
+import { Asclepius, List, Moon, Sun } from '@phosphor-icons/react'
 import { MANIFEST_PATH, nodeTitle, type Manifest } from './content'
 import { locate, segmentsFromSplat, WIKI_ROOT, type Located } from './tree'
 import { useManifest } from './useManifest'
 import { SIDEBAR_QUERY, useMediaQuery } from './useMediaQuery'
+import { useTheme } from './useTheme'
 import { Breadcrumbs } from './components/Breadcrumbs'
 import { EmptyState } from './components/EmptyState'
 import { FolderView } from './components/FolderView'
@@ -18,6 +19,7 @@ export default function App() {
   const isSidebar = useMediaQuery(SIDEBAR_QUERY)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const location = useLocation()
+  const { theme, toggleTheme } = useTheme()
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
 
@@ -43,7 +45,9 @@ export default function App() {
 
       <a
         href="#main"
-        className="absolute top-0 left-0 z-60 -translate-y-full rounded-br-xl bg-ink-900 px-4 py-3 font-semibold text-white focus-visible:translate-y-0"
+        // `bg-ink-900` on `text-mist` inverts cleanly: both tokens swap with the
+        // theme, so the skip link stays high-contrast either way.
+        className="absolute top-0 left-0 z-60 -translate-y-full rounded-br-xl bg-ink-900 px-4 py-3 font-semibold text-mist focus-visible:translate-y-0"
       >
         Skip to the guide
       </a>
@@ -51,7 +55,7 @@ export default function App() {
       {/* Frosted rather than filled: no background colour, so what shows through
           is the blurred page behind it. The hairline and shadow do the work of
           separating it from the content that scrolls underneath. */}
-      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 px-3 pt-[env(safe-area-inset-top)] shadow-md shadow-ink-900/10 backdrop-blur-xs lg:px-5">
+      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 px-3 pt-[env(safe-area-inset-top)] shadow-md shadow-shade/10 backdrop-blur-xs lg:px-5">
         {/* No menu button until there is a tree behind it — a button that opens
             nothing is worse than no button. */}
         {!isSidebar && manifestState.status === 'ready' ? (
@@ -59,7 +63,7 @@ export default function App() {
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-expanded={drawerOpen}
-            className="inline-flex min-h-tap items-center gap-1.5 rounded-xl px-2.5 font-semibold text-ink-700 transition hover:text-ink-900 hover:bg-white/50 active:bg-teal-soft"
+            className="inline-flex min-h-tap items-center gap-1.5 rounded-xl px-2.5 font-semibold text-ink-700 transition hover:text-ink-900 hover:bg-surface/50 active:bg-teal-soft"
           >
             <List size={22} weight="bold" aria-hidden="true" />
             Menu
@@ -74,7 +78,7 @@ export default function App() {
         <Link
           to={WIKI_ROOT}
           aria-label="Home"
-          className="ml-auto inline-flex min-h-tap shrink-0 items-center rounded-xl px-2 transition hover:bg-white/50 lg:ml-0"
+          className="ml-auto inline-flex min-h-tap shrink-0 items-center rounded-xl px-2 transition hover:bg-surface/50 lg:ml-0"
         >
           <Asclepius size={26} weight="duotone" aria-hidden="true" className="text-teal-deep" />
         </Link>
@@ -82,10 +86,30 @@ export default function App() {
         {/* `min-w-0` with `truncate` lets the title give way rather than overflow. */}
         <Link
           to={WIKI_ROOT}
-          className="hidden min-w-0 truncate rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 transition hover:bg-white/50 lg:ml-auto lg:block lg:text-xl"
+          className="hidden min-w-0 truncate rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 transition hover:bg-surface/50 lg:ml-auto lg:block lg:text-xl"
         >
           {SITE_NAME}
         </Link>
+
+        {/* Last in the bar in both layouts, so it lands at the right edge on a
+            phone as well as on desktop. The icon shows the theme being switched
+            *to*, and the accessible name says so outright rather than leaving a
+            screen reader to infer it from a sun. */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          className="grid size-tap shrink-0 place-items-center rounded-xl text-ink-500 transition hover:text-ink-900 hover:bg-surface/50 active:bg-teal-soft"
+        >
+          {theme === 'dark' ? (
+            <Sun size={21} weight="duotone" aria-hidden="true" />
+          ) : (
+            <Moon size={21} weight="duotone" aria-hidden="true" />
+          )}
+          <span className="visually-hidden">
+            {theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          </span>
+        </button>
       </header>
 
       <div className={isSidebar ? 'grid grid-cols-[19rem_minmax(0,1fr)] items-start' : undefined}>

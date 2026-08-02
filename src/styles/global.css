@@ -36,6 +36,14 @@
 
   --color-mist: #f4f9fb;
 
+  /* The raised surface: cards, the drawer, code blocks. A token rather than a
+     literal `white` so the dark theme can move it without touching markup. */
+  --color-surface: #ffffff;
+
+  /* Always dark, in both themes — scrims and drop shadows are shadow in the
+     dark theme too, so this one must not invert with the ink ramp. */
+  --color-shade: #0c2b33;
+
   --color-amber-soft: #fdf0dc;
   --color-amber-deep: #b97324;
   /* Light yellow ground for note/warning callouts inside guide content.
@@ -91,6 +99,63 @@
       transform: translateX(0);
     }
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Themes
+
+   Dark is the default: `index.html` stamps `data-theme` on <html> before the
+   first paint, falling back to "dark" when nothing is stored.
+
+   The whole app themes by moving these token values — the ink ramp inverts, so
+   `text-ink-900` stays "the strongest text colour" and every `border-ink-900/5`
+   hairline becomes a light hairline on dark without any markup changing.
+
+   Two tokens deliberately do NOT invert: `--color-shade` (shadows and the
+   drawer scrim are dark in both themes) and the aurora tints below.
+   --------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --aurora-1: rgb(144 195 203 / 55%);
+  --aurora-2: rgb(55 138 221 / 14%);
+  --aurora-3: rgb(144 195 203 / 42%);
+  --halftone-dot: rgb(42 102 111 / 22%);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-ink-900: #eaf3f5;
+  --color-ink-700: #bed3d9;
+  --color-ink-500: #8ba7ae;
+  --color-ink-300: #587880;
+
+  /* Same hue family as the light theme, stepped the other way: `deep` and
+     `dark` now have to carry contrast against a dark ground rather than a
+     white one, so they lighten. Measured on --color-mist below: deep 8.0:1,
+     dark 10.4:1, ink-500 6.2:1. */
+  --color-teal-soft: #163940;
+  --color-teal-mid: #4d8d98;
+  --color-teal-deep: #7cc2cd;
+  --color-teal-dark: #a3dae3;
+
+  --color-mist: #0b1a1f;
+  --color-surface: #14282f;
+  --color-shade: #000000;
+
+  --color-amber-soft: #3b2a13;
+  --color-amber-deep: #e2a75f;
+  --color-amber-wash: #35301a;
+  --color-amber-line: #7a6626;
+
+  /* Dimmer and cooler: the light theme's washes are near-white at this
+     opacity and would glow against the dark ground. */
+  --aurora-1: rgb(77 141 152 / 22%);
+  --aurora-2: rgb(55 138 221 / 12%);
+  --aurora-3: rgb(77 141 152 / 16%);
+  --halftone-dot: rgb(144 195 203 / 12%);
 }
 
 /* ---------------------------------------------------------------------------
@@ -161,14 +226,15 @@
 @utility aurora {
   background-image:
     /* The brand colour is at its most useful here: large soft washes are where a
-       light tint actually reads. */
-    radial-gradient(60% 80% at 15% 20%, rgb(144 195 203 / 55%), transparent 60%),
-    radial-gradient(50% 70% at 85% 30%, rgb(55 138 221 / 14%), transparent 60%),
-    radial-gradient(70% 80% at 50% 100%, rgb(144 195 203 / 42%), transparent 65%);
+       light tint actually reads. Tints come from variables so the dark theme can
+       dim them without redefining the geometry. */
+    radial-gradient(60% 80% at 15% 20%, var(--aurora-1), transparent 60%),
+    radial-gradient(50% 70% at 85% 30%, var(--aurora-2), transparent 60%),
+    radial-gradient(70% 80% at 50% 100%, var(--aurora-3), transparent 65%);
 }
 
 @utility halftone {
-  background-image: radial-gradient(rgb(42 102 111 / 22%) 1.5px, transparent 1.5px);
+  background-image: radial-gradient(var(--halftone-dot) 1.5px, transparent 1.5px);
   background-size: 18px 18px;
   mask-image: linear-gradient(to bottom, black, transparent 70%);
   -webkit-mask-image: linear-gradient(to bottom, black, transparent 70%);

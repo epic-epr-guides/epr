@@ -22,14 +22,14 @@ export function EmptyState({ title, children, tone = 'neutral', detail }: EmptyS
   return (
     <div
       className={`animate-fade-up my-6 rounded-2xl p-5 shadow-sm ring-1 backdrop-blur sm:p-6 ${
-        isProblem ? 'bg-amber-soft/70 ring-amber-deep/20' : 'bg-white/80 ring-ink-900/5'
+        isProblem ? 'bg-amber-soft/70 ring-amber-deep/20' : 'bg-surface/80 ring-ink-900/5'
       }`}
       role={isProblem ? 'alert' : undefined}
     >
       <div className="flex items-start gap-3.5">
         <span
           className={`grid size-11 shrink-0 place-items-center rounded-xl ${
-            isProblem ? 'bg-white/80 text-amber-deep' : 'bg-teal-soft text-teal-deep'
+            isProblem ? 'bg-surface/80 text-amber-deep' : 'bg-teal-soft text-teal-deep'
           }`}
         >
           <Icon size={26} weight="duotone" aria-hidden="true" />

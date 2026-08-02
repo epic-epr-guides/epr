@@ -4,6 +4,9 @@ import { nodeTitle, type ContentNode } from '../content'
 import { countGuides, routeForSegments, segmentFor } from '../tree'
 import { EmptyState } from './EmptyState'
 
+/** Where readers report a guide that has gone out of date. */
+const REPORT_EMAIL = 'sample@email.com'
+
 interface FolderViewProps {
   title: string
   nodes: ContentNode[]
@@ -25,7 +28,7 @@ export function FolderView({ title, nodes, segments, intro }: FolderViewProps) {
       <header className={isHome ? 'pt-4 text-center sm:pt-8' : 'pt-2'}>
         {isHome ? (
           <div className="animate-fade-up flex justify-center">
-            <span className="animate-float inline-flex size-20 items-center justify-center rounded-3xl bg-white shadow-xl shadow-teal-mid/40 ring-2 ring-teal-mid sm:size-24">
+            <span className="animate-float inline-flex size-20 items-center justify-center rounded-3xl bg-surface shadow-xl shadow-teal-mid/40 ring-2 ring-teal-mid sm:size-24">
               <Asclepius size={46} weight="duotone" className="text-teal-deep" aria-hidden="true" />
             </span>
           </div>
@@ -73,7 +76,7 @@ export function FolderView({ title, nodes, segments, intro }: FolderViewProps) {
               >
                 <Link
                   to={routeForSegments(childSegments)}
-                  className="group flex min-h-tap items-center gap-3.5 rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-ink-900/5 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md hover:ring-teal-deep/25 active:translate-y-0 active:bg-teal-soft sm:p-5"
+                  className="group flex min-h-tap items-center gap-3.5 rounded-2xl bg-surface/80 p-4 shadow-sm ring-1 ring-ink-900/5 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md hover:ring-teal-deep/25 active:translate-y-0 active:bg-teal-soft sm:p-5"
                 >
                   <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-teal-soft text-teal-deep">
                     <Icon size={24} weight="duotone" aria-hidden="true" />
@@ -102,6 +105,23 @@ export function FolderView({ title, nodes, segments, intro }: FolderViewProps) {
           })}
         </ul>
       )}
+
+      {/* Home page only — it is a statement about the site as a whole, and
+          repeating it under every category would train readers to skip it. */}
+      {isHome ? (
+        <p className="animate-fade-up mt-10 border-t border-ink-900/10 pt-5 text-sm leading-relaxed text-ink-500">
+          <span className="font-semibold text-ink-700">Disclaimer:</span> These are unofficial tips
+          to help you navigate EPIC and are not official guidance. Features and processes may change
+          with future updates. If you spot any incorrect information or have additional tips that
+          could benefit others, please report them to{' '}
+          <a
+            href={`mailto:${REPORT_EMAIL}`}
+            className="font-medium break-all text-teal-dark underline underline-offset-4"
+          >
+            {REPORT_EMAIL}
+          </a>
+        </p>
+      ) : null}
     </div>
   )
 }

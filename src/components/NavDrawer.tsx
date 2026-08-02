@@ -166,7 +166,7 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
       <div
         aria-hidden="true"
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-ink-900/45 backdrop-blur-[2px] transition-[opacity,visibility] duration-200 ${
+        className={`fixed inset-0 z-40 bg-shade/55 backdrop-blur-[2px] transition-[opacity,visibility] duration-200 ${
           isDrawerOpen ? 'visible opacity-100' : 'invisible opacity-0'
         }`}
       />
@@ -175,7 +175,7 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`fixed inset-y-0 left-0 z-50 flex w-[min(21rem,88vw)] flex-col bg-white pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] shadow-2xl transition-transform duration-200 ease-out ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[min(21rem,88vw)] flex-col bg-surface pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] shadow-2xl transition-transform duration-200 ease-out ${
           isDrawerOpen ? 'translate-x-0' : '-translate-x-[102%]'
         }`}
         // Keeps the closed drawer out of the tab order and away from screen readers.
@@ -187,7 +187,7 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
             type="button"
             onClick={onClose}
             data-drawer-initial-focus
-            className="grid size-tap place-items-center rounded-xl text-ink-500 transition hover:text-ink-900 hover:bg-white/50 active:bg-teal-soft"
+            className="grid size-tap place-items-center rounded-xl text-ink-500 transition hover:text-ink-900 hover:bg-surface/50 active:bg-teal-soft"
           >
             <X size={20} weight="bold" aria-hidden="true" />
             <span className="visually-hidden">Close the menu</span>
@@ -266,7 +266,7 @@ function NodeList(props: NodeListProps) {
                   `${rowClasses(compact)} ${
                     isActive
                       ? 'bg-teal-soft font-semibold text-teal-dark shadow-[inset_0.25rem_0_0_var(--color-teal-deep)]'
-                      : 'text-ink-700 hover:bg-white/50 active:bg-teal-soft'
+                      : 'text-ink-700 hover:bg-surface/50 active:bg-teal-soft'
                   }`
                 }
               >
@@ -306,7 +306,7 @@ function FolderRow(props: NodeListProps & { node: FolderNode; segments: string[]
         aria-controls={listId}
         onClick={() => onToggle(key)}
         style={{ paddingLeft: indentFor(depth, compact), paddingRight: '0.75rem' }}
-        className={`${rowClasses(compact)} font-display font-semibold hover:bg-white/50 active:bg-teal-soft ${
+        className={`${rowClasses(compact)} font-display font-semibold hover:bg-surface/50 active:bg-teal-soft ${
           onPath ? 'text-teal-dark' : 'text-ink-900'
         }`}
       >
