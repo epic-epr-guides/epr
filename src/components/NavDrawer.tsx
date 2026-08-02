@@ -153,7 +153,7 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
             type="button"
             onClick={onClose}
             data-drawer-initial-focus
-            className="grid size-tap place-items-center rounded-xl text-ink-500 transition hover:text-ink-900 hover:backdrop-blur-md active:bg-teal-soft"
+            className="grid size-tap place-items-center rounded-xl text-ink-500 transition hover:text-ink-900 hover:bg-white/50 active:bg-teal-soft"
           >
             <X size={20} weight="bold" aria-hidden="true" />
             <span className="visually-hidden">Close the menu</span>
@@ -228,7 +228,7 @@ function NodeList(props: NodeListProps) {
                   `${rowClasses(compact)} ${
                     isActive
                       ? 'bg-teal-soft font-semibold text-teal-dark shadow-[inset_0.25rem_0_0_var(--color-teal-deep)]'
-                      : 'text-ink-700 hover:backdrop-blur-md active:bg-teal-soft'
+                      : 'text-ink-700 hover:bg-white/50 active:bg-teal-soft'
                   }`
                 }
               >
@@ -268,7 +268,7 @@ function FolderRow(props: NodeListProps & { node: FolderNode; segments: string[]
         aria-controls={listId}
         onClick={() => onToggle(key)}
         style={{ paddingLeft: indentFor(depth, compact), paddingRight: '0.75rem' }}
-        className={`${rowClasses(compact)} font-display font-semibold hover:backdrop-blur-md active:bg-teal-soft ${
+        className={`${rowClasses(compact)} font-display font-semibold hover:bg-white/50 active:bg-teal-soft ${
           onPath ? 'text-teal-dark' : 'text-ink-900'
         }`}
       >
