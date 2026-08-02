@@ -99,7 +99,10 @@ export default function App() {
           />
         ) : null}
 
-        <main id="main" className="min-w-0">
+        {/* Column 2 explicitly: the sidebar is fixed and therefore out of flow,
+            so without this `main` would be auto-placed into the empty 19rem
+            first track and squeezed. */}
+        <main id="main" className="min-w-0 lg:col-start-2">
           <div className="mx-auto max-w-[72ch] px-4 pb-24 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:px-6 lg:px-10">
             {manifestState.status === 'loading' ? (
               <p role="status" className="py-10 text-ink-500">

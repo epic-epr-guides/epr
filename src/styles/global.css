@@ -159,11 +159,7 @@
   background-image:
     /* The brand colour is at its most useful here: large soft washes are where a
        light tint actually reads. */
-    radial-gradient(
-      60% 80% at 15% 20%,
-      color-mix(in oklab, var(--color-slate-400) 55%, transparent),
-      transparent 60%
-    ),
+    radial-gradient(60% 80% at 15% 20%, rgb(144 195 203 / 55%), transparent 60%),
     radial-gradient(50% 70% at 85% 30%, rgb(55 138 221 / 14%), transparent 60%),
     radial-gradient(70% 80% at 50% 100%, rgb(144 195 203 / 42%), transparent 65%);
 }
