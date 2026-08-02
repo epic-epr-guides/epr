@@ -66,22 +66,23 @@ export default function App() {
           </button>
         ) : null}
 
-        {/* The mark and the wordmark are two separate links to the same place,
-            pinned to opposite ends of the bar. The mark carries its own short
-            accessible name so a screen reader is not read the site title twice. */}
+        {/* The mark and the wordmark are two separate links to the same place.
+            On a phone only the mark shows, pushed to the right opposite the menu
+            button. From lg the mark returns to the left and the wordmark takes
+            the right edge. The mark carries its own short accessible name so a
+            screen reader is not read the site title twice on desktop. */}
         <Link
           to={WIKI_ROOT}
           aria-label="Home"
-          className="inline-flex min-h-tap shrink-0 items-center rounded-xl px-2 transition hover:bg-white/50"
+          className="ml-auto inline-flex min-h-tap shrink-0 items-center rounded-xl px-2 transition hover:bg-white/50 lg:ml-0"
         >
           <Asclepius size={26} weight="duotone" aria-hidden="true" className="text-teal-deep" />
         </Link>
 
-        {/* `ml-auto` pushes it to the right edge; `min-w-0` with `truncate` lets
-            it give way rather than overflow when the bar is narrow. */}
+        {/* `min-w-0` with `truncate` lets the title give way rather than overflow. */}
         <Link
           to={WIKI_ROOT}
-          className="ml-auto min-w-0 truncate rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 transition hover:bg-white/50 lg:text-xl"
+          className="hidden min-w-0 truncate rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 transition hover:bg-white/50 lg:ml-auto lg:block lg:text-xl"
         >
           {SITE_NAME}
         </Link>
