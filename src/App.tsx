@@ -48,7 +48,10 @@ export default function App() {
         Skip to the guide
       </a>
 
-      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 bg-white/80 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-md lg:px-5">
+      {/* Frosted rather than filled: no background colour, so what shows through
+          is the blurred page behind it. The hairline and shadow do the work of
+          separating it from the content that scrolls underneath. */}
+      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 px-3 pt-[env(safe-area-inset-top)] shadow-sm shadow-ink-900/5 backdrop-blur-xl lg:px-5">
         {/* No menu button until there is a tree behind it — a button that opens
             nothing is worse than no button. */}
         {!isSidebar && manifestState.status === 'ready' ? (
@@ -56,7 +59,7 @@ export default function App() {
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-expanded={drawerOpen}
-            className="inline-flex min-h-tap items-center gap-1.5 rounded-xl px-2.5 font-semibold text-ink-700 transition hover:bg-mist hover:text-ink-900 active:bg-teal-soft"
+            className="inline-flex min-h-tap items-center gap-1.5 rounded-xl px-2.5 font-semibold text-ink-700 transition hover:text-ink-900 hover:backdrop-blur-md active:bg-teal-soft"
           >
             <List size={22} weight="bold" aria-hidden="true" />
             Menu
