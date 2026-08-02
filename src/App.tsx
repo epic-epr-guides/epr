@@ -51,7 +51,7 @@ export default function App() {
       {/* Frosted rather than filled: no background colour, so what shows through
           is the blurred page behind it. The hairline and shadow do the work of
           separating it from the content that scrolls underneath. */}
-      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 px-3 pt-[env(safe-area-inset-top)] shadow-md shadow-ink-900/10 backdrop-blur-sm lg:px-5">
+      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 px-3 pt-[env(safe-area-inset-top)] shadow-md shadow-ink-900/10 backdrop-blur-xs lg:px-5">
         {/* No menu button until there is a tree behind it — a button that opens
             nothing is worse than no button. */}
         {!isSidebar && manifestState.status === 'ready' ? (
