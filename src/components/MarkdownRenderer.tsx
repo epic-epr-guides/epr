@@ -62,6 +62,8 @@ const PROSE_CLASSES = [
   'prose-h2:mt-12 prose-h2:border-t prose-h2:border-ink-900/10 prose-h2:pt-8 prose-h2:text-2xl prose-h2:font-bold',
   'prose-h3:text-xl prose-h3:font-bold',
   // Body
+  // Tighter paragraph spacing than prose-lg's default (mb-6, ~24px) — this reads
+  // like a wall of gaps between short instructional paragraphs.
   'prose-p:text-ink-700 prose-li:text-ink-700 prose-strong:font-semibold prose-strong:text-ink-900',
   // `py-0.5` grows an inline link's hit area without changing the line box, so
   // a thumb has something to aim at mid-sentence. Inline links in running text

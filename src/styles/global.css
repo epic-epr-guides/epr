@@ -50,20 +50,8 @@
      explicit in the markup rather than a magic number. */
   --spacing-tap: 2.75rem;
 
-  --animate-float: float 6s ease-in-out infinite;
   --animate-fade-up: fade-up 0.7s ease-out both;
-  --animate-pulse-dot: pulse-dot 1.8s ease-in-out infinite;
   --animate-drawer-in: drawer-in 0.24s cubic-bezier(0.2, 0, 0, 1) both;
-
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-8px);
-    }
-  }
 
   @keyframes fade-up {
     from {
@@ -73,16 +61,6 @@
     to {
       opacity: 1;
       transform: translateY(0);
-    }
-  }
-
-  @keyframes pulse-dot {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.35;
     }
   }
 
