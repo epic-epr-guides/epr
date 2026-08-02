@@ -51,7 +51,7 @@ export default function App() {
       {/* Frosted rather than filled: no background colour, so what shows through
           is the blurred page behind it. The hairline and shadow do the work of
           separating it from the content that scrolls underneath. */}
-      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 px-3 pt-[env(safe-area-inset-top)] shadow-md shadow-ink-900/10 backdrop-blur-xl lg:px-5">
+      <header className="sticky top-0 z-30 flex min-h-16 items-center gap-1 border-b border-ink-900/5 px-3 pt-[env(safe-area-inset-top)] shadow-md shadow-ink-900/10 backdrop-blur-sm lg:px-5">
         {/* No menu button until there is a tree behind it — a button that opens
             nothing is worse than no button. */}
         {!isSidebar && manifestState.status === 'ready' ? (
@@ -79,21 +79,13 @@ export default function App() {
           <Asclepius size={26} weight="duotone" aria-hidden="true" className="text-teal-deep" />
         </Link>
 
-        {/* Wordmark plus version. The version sits outside the link so it stays
-            out of the link's accessible name, and is baseline-aligned so it
-            reads as a footnote to the title rather than a second heading. */}
-        <div className="hidden min-w-0 items-baseline gap-1.5 lg:ml-auto lg:flex">
-          {/* `min-w-0` with `truncate` lets the title give way rather than overflow. */}
-          <Link
-            to={WIKI_ROOT}
-            className="min-w-0 truncate rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 transition hover:bg-white/50 lg:text-xl"
-          >
-            {SITE_NAME}
-          </Link>
-          <span className="shrink-0 pr-2 text-xs font-medium tabular-nums text-ink-500">
-            v{__APP_VERSION__}
-          </span>
-        </div>
+        {/* `min-w-0` with `truncate` lets the title give way rather than overflow. */}
+        <Link
+          to={WIKI_ROOT}
+          className="hidden min-w-0 truncate rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 transition hover:bg-white/50 lg:ml-auto lg:block lg:text-xl"
+        >
+          {SITE_NAME}
+        </Link>
       </header>
 
       <div className={isSidebar ? 'grid grid-cols-[19rem_minmax(0,1fr)] items-start' : undefined}>

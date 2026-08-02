@@ -99,7 +99,11 @@
 
 @layer base {
   html {
-    /* Nothing may introduce sideways page scroll at any viewport ≥320px. */
+    /* Nothing may introduce sideways page scroll at any viewport ≥320px.
+       Clipped here and *only* here: the same rule on `body` as well would make
+       body its own scroll container, which stops the window scrolling at all —
+       taking `position: sticky` on the header and `window.scrollTo` on route
+       change down with it. */
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
@@ -109,7 +113,6 @@
     background-color: var(--color-mist);
     color: var(--color-ink-700);
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
     overflow-wrap: break-word;
     /* 17px on phones, 18px from tablet up. */
     font-size: 1.0625rem;

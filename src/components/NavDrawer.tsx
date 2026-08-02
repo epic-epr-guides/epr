@@ -99,6 +99,14 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
     </h2>
   )
 
+  // Pinned to the foot of the panel in both modes. Right-aligned and quiet: a
+  // build detail for whoever is troubleshooting, not something a reader needs.
+  const version = (
+    <p className="shrink-0 border-t border-ink-900/5 px-5 py-3 text-right text-xs font-medium tabular-nums text-ink-500">
+      v{__APP_VERSION__}
+    </p>
+  )
+
   const tree$ =
     tree.length === 0 ? (
       <p className="px-4 py-3 text-base text-ink-500 italic">No categories have been added yet.</p>
@@ -136,10 +144,19 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
         // Full height rather than a max-height: with `max-h` the panel shrank to
         // fit its categories and the fill stopped mid-page, reading as a
         // floating card.
-        className="fixed top-16 left-0 h-[calc(100dvh-4rem)] w-76 overflow-y-auto overscroll-contain bg-slate-400/10 py-6 pb-16 backdrop-blur-xl"
+        //
+        // Column layout so the version stays at the foot of the panel and the
+        // tree scrolls above it, rather than the version sitting at the end of
+        // a long list where it would scroll out of sight.
+        className="fixed top-16 left-0 flex h-[calc(100dvh-4rem)] w-76 flex-col bg-slate-400/10 backdrop-blur-xl"
       >
-        <div className="px-5 pb-2">{heading}</div>
-        {tree$}
+        {/* `min-h-0` lets this track shrink below its content so the overflow
+            actually engages — without it a flex child refuses to shrink. */}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-6">
+          <div className="px-5 pb-2">{heading}</div>
+          {tree$}
+        </div>
+        {version}
       </nav>
     )
   }
@@ -176,9 +193,13 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
             <span className="visually-hidden">Close the menu</span>
           </button>
         </div>
-        <nav aria-labelledby={titleId} className="flex-1 overflow-y-auto overscroll-contain py-2 pb-10">
+        <nav
+          aria-labelledby={titleId}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-2 pb-6"
+        >
           {tree$}
         </nav>
+        {version}
       </div>
     </>
   )
