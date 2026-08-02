@@ -110,7 +110,11 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
       <button
         type="button"
         onClick={toggleTheme}
-        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-ink-500 transition hover:text-ink-900 hover:bg-surface/50 active:bg-teal-soft"
+        // `bg-ink-900/10` rather than `surface/50`: the surface wash all but
+        // disappears against the sidebar's own translucent fill, which left the
+        // hover reading as a text-colour change with no container behind it.
+        // The ink tint inverts with the theme, so it stays visible in both.
+        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-ink-500 transition-colors duration-150 hover:bg-ink-900/10 hover:text-ink-900 active:bg-teal-soft"
       >
         {/* The icon shows the theme being switched *to*, and the label says so
             in words rather than leaving it to be inferred from a sun. */}
