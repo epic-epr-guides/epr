@@ -119,7 +119,9 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
     return (
       <nav
         aria-labelledby={titleId}
-        className="sticky top-16 max-h-[calc(100dvh-4rem)] w-76 self-start overflow-y-auto overscroll-contain border-r border-ink-900/5 py-6 pb-16"
+        // Frosted rather than bordered: the blur is what separates the sidebar
+        // from the reading column, so no hairline is needed on the right.
+        className="sticky top-16 max-h-[calc(100dvh-4rem)] w-76 self-start overflow-y-auto overscroll-contain py-6 pb-16 backdrop-blur-xl"
       >
         <div className="px-5 pb-2">{heading}</div>
         {tree$}
