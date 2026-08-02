@@ -66,22 +66,25 @@ export default function App() {
           </button>
         ) : null}
 
-        {/* Left-aligned beside the menu button rather than optically centred:
-            centring needs a balancing spacer, and at 320px that spacer squeezes
-            the title down to a few clipped characters. */}
+        {/* The mark and the wordmark are two separate links to the same place,
+            pinned to opposite ends of the bar. The mark carries its own short
+            accessible name so a screen reader is not read the site title twice. */}
         <Link
           to={WIKI_ROOT}
-          className="flex min-w-0 flex-1 items-center gap-2 rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 lg:px-0 lg:text-xl"
+          aria-label="Home"
+          className="inline-flex min-h-tap shrink-0 items-center rounded-xl px-2 transition hover:bg-white/50"
         >
-          <Asclepius
-            size={26}
-            weight="duotone"
-            aria-hidden="true"
-            className="shrink-0 text-teal-deep"
-          />
-          <span className="truncate">{SITE_NAME}</span>
+          <Asclepius size={26} weight="duotone" aria-hidden="true" className="text-teal-deep" />
         </Link>
 
+        {/* `ml-auto` pushes it to the right edge; `min-w-0` with `truncate` lets
+            it give way rather than overflow when the bar is narrow. */}
+        <Link
+          to={WIKI_ROOT}
+          className="ml-auto min-w-0 truncate rounded-xl px-2 py-2 font-display font-bold tracking-tight text-ink-900 transition hover:bg-white/50 lg:text-xl"
+        >
+          {SITE_NAME}
+        </Link>
       </header>
 
       <div className={isSidebar ? 'grid grid-cols-[19rem_minmax(0,1fr)] items-start' : undefined}>
