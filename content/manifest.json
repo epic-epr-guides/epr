@@ -11,7 +11,23 @@
       "type": "folder",
       "path": "documentation",
       "title": "Documentation",
-      "children": []
+      "children": [
+        {
+          "type": "guide",
+          "path": "documenting-patient-notes.md",
+          "title": "Documenting Notes"
+        },
+        {
+          "type": "guide",
+          "path": "smartphrases.md",
+          "title": "SmartPhrases"
+        },
+        {
+          "type": "guide",
+          "path": "speed-buttons.md",
+          "title": "Speed Buttons"
+        }
+      ]
     },
     {
       "type": "folder",
@@ -35,13 +51,41 @@
       "type": "folder",
       "path": "order",
       "title": "Order",
-      "children": []
+      "children": [
+        {
+          "type": "folder",
+          "path": "bloods",
+          "title": "Bloods",
+          "children": []
+        },
+        {
+          "type": "guide",
+          "path": "fluids.md",
+          "title": "Fluids"
+        },
+        {
+          "type": "guide",
+          "path": "order-panel.md",
+          "title": "Order Panel"
+        }
+      ]
     },
     {
       "type": "folder",
       "path": "patient-lists",
       "title": "Patient Lists",
-      "children": []
+      "children": [
+        {
+          "type": "guide",
+          "path": "finding-and-joining-patient-lists.md",
+          "title": "Finding & Joining Patient Lists"
+        },
+        {
+          "type": "guide",
+          "path": "making-your-own-lists.md",
+          "title": "Making your own Patient List"
+        }
+      ]
     },
     {
       "type": "folder",
