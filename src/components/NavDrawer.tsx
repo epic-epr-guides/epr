@@ -1,8 +1,9 @@
 import { useEffect, useId, useMemo, useRef, useState, type HTMLAttributes } from 'react'
 import { NavLink } from 'react-router-dom'
-import { CaretRight, X } from '@phosphor-icons/react'
+import { CaretRight, Moon, Sun, X } from '@phosphor-icons/react'
 import { nodeTitle, type ContentNode, type FolderNode } from '../content'
 import { countGuides, routeForSegments, segmentFor } from '../tree'
+import { useTheme } from '../useTheme'
 
 interface NavDrawerProps {
   tree: ContentNode[]
@@ -18,6 +19,7 @@ interface NavDrawerProps {
 export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: NavDrawerProps) {
   const panelRef = useRef<HTMLDivElement>(null)
   const titleId = useId()
+  const { theme, toggleTheme } = useTheme()
 
   // Folders on the path to the current page start open, so a reader who arrives
   // from a shared link can see where they are.
@@ -99,12 +101,30 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
     </h2>
   )
 
-  // Pinned to the foot of the panel in both modes. Right-aligned and quiet: a
-  // build detail for whoever is troubleshooting, not something a reader needs.
-  const version = (
-    <p className="shrink-0 border-t border-ink-900/5 px-5 py-3 text-right text-xs font-medium tabular-nums text-ink-500">
-      v{__APP_VERSION__}
-    </p>
+  // Pinned to the foot of the panel in both modes: the theme toggle on the
+  // left, the version on the right. Both are quiet — one is a preference a
+  // reader sets once, the other a build detail for troubleshooting.
+  const themeLabel = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+  const foot = (
+    <div className="flex shrink-0 items-center justify-between gap-2 border-t border-ink-900/5 py-1 pr-5 pl-2">
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-ink-500 transition hover:text-ink-900 hover:bg-surface/50 active:bg-teal-soft"
+      >
+        {/* The icon shows the theme being switched *to*, and the label says so
+            in words rather than leaving it to be inferred from a sun. */}
+        {theme === 'dark' ? (
+          <Sun size={16} weight="duotone" aria-hidden="true" />
+        ) : (
+          <Moon size={16} weight="duotone" aria-hidden="true" />
+        )}
+        {themeLabel}
+      </button>
+      <span className="shrink-0 text-xs font-medium tabular-nums text-ink-500">
+        v{__APP_VERSION__}
+      </span>
+    </div>
   )
 
   const tree$ =
@@ -156,7 +176,7 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
           <div className="px-5 pb-2">{heading}</div>
           {tree$}
         </div>
-        {version}
+        {foot}
       </nav>
     )
   }
@@ -199,7 +219,7 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
         >
           {tree$}
         </nav>
-        {version}
+        {foot}
       </div>
     </>
   )

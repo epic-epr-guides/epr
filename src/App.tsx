@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
-import { Asclepius, List, Moon, Sun } from '@phosphor-icons/react'
+import { Asclepius, List } from '@phosphor-icons/react'
 import { MANIFEST_PATH, nodeTitle, type Manifest } from './content'
 import { locate, segmentsFromSplat, WIKI_ROOT, type Located } from './tree'
 import { useManifest } from './useManifest'
 import { SIDEBAR_QUERY, useMediaQuery } from './useMediaQuery'
-import { useTheme } from './useTheme'
 import { Breadcrumbs } from './components/Breadcrumbs'
 import { EmptyState } from './components/EmptyState'
 import { FolderView } from './components/FolderView'
@@ -19,7 +18,6 @@ export default function App() {
   const isSidebar = useMediaQuery(SIDEBAR_QUERY)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const location = useLocation()
-  const { theme, toggleTheme } = useTheme()
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
 
@@ -90,26 +88,6 @@ export default function App() {
         >
           {SITE_NAME}
         </Link>
-
-        {/* Last in the bar in both layouts, so it lands at the right edge on a
-            phone as well as on desktop. The icon shows the theme being switched
-            *to*, and the accessible name says so outright rather than leaving a
-            screen reader to infer it from a sun. */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          className="grid size-tap shrink-0 place-items-center rounded-xl text-ink-500 transition hover:text-ink-900 hover:bg-surface/50 active:bg-teal-soft"
-        >
-          {theme === 'dark' ? (
-            <Sun size={21} weight="duotone" aria-hidden="true" />
-          ) : (
-            <Moon size={21} weight="duotone" aria-hidden="true" />
-          )}
-          <span className="visually-hidden">
-            {theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          </span>
-        </button>
       </header>
 
       <div className={isSidebar ? 'grid grid-cols-[19rem_minmax(0,1fr)] items-start' : undefined}>
