@@ -103,12 +103,6 @@
       "path": "results",
       "title": "Results",
       "children": []
-    },
-    {
-      "type": "folder",
-      "path": "epic",
-      "title": "EPIC",
-      "children": []
     }
   ]
 }
