@@ -1,10 +1,16 @@
-import { createReadStream, statSync } from 'node:fs'
+import { createReadStream, readFileSync, statSync } from 'node:fs'
 import { extname, join, normalize, resolve, sep } from 'node:path'
 import { defineConfig, type Plugin, type Connect } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 const CONTENT_DIR = resolve(process.cwd(), 'content')
+
+// Read at config time and inline as a literal, so package.json is the single
+// place a version is bumped and none of it ends up in the bundle but the string.
+const { version } = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf8')) as {
+  version: string
+}
 
 const MIME: Record<string, string> = {
   '.md': 'text/markdown; charset=utf-8',
@@ -121,6 +127,9 @@ export default defineConfig({
   // Relative base: the built app works from the webroot *or* any subfolder
   // without a rebuild. Combined with hash routing, no host config is needed.
   base: './',
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   plugins: [react(), tailwindcss(), serveContentDir()],
   build: {
     target: 'es2020',
