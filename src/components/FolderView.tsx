@@ -28,7 +28,7 @@ export function FolderView({ title, nodes, segments, intro }: FolderViewProps) {
       <header className={isHome ? 'pt-4 text-center sm:pt-8' : 'pt-2'}>
         {isHome ? (
           <div className="animate-fade-up flex justify-center">
-            <span className="animate-float inline-flex size-20 items-center justify-center rounded-3xl bg-surface shadow-xl shadow-teal-mid/40 ring-2 ring-teal-mid sm:size-24">
+            <span className="inline-flex size-20 items-center justify-center rounded-3xl bg-surface shadow-xl shadow-teal-mid/40 ring-2 ring-teal-mid sm:size-24">
               <Asclepius size={46} weight="duotone" className="text-teal-deep" aria-hidden="true" />
             </span>
           </div>
