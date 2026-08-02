@@ -5,7 +5,7 @@ import { countGuides, routeForSegments, segmentFor } from '../tree'
 import { EmptyState } from './EmptyState'
 
 /** Where readers report a guide that has gone out of date. */
-const REPORT_EMAIL = 'sample@email.com'
+const REPORT_EMAIL = 'epic.supportproject@gmail.com'
 
 interface FolderViewProps {
   title: string

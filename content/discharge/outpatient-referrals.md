@@ -12,8 +12,6 @@ Outpatient referrals can be made from either the **Orders** tab or while complet
 4. Complete all required referral information, including the relevant clinical details.
 5. **Sign** and submit the referral.
 
-> **Please note:** Some outpatient services require additional steps after the referral has been submitted E.g.
-
-Hospital at Home referrals also require you to telephone the service to discuss the referral and confirm acceptance.
+> **Please note:** Some outpatient services require additional steps after the referral has been submitted, e.g. Hospital at Home referrals also require you to telephone the service to discuss the referral and confirm acceptance.
 
 ![](./media/outpatient-referrals.mp4)
