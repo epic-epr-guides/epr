@@ -4,14 +4,6 @@ A mobile-first wiki that renders step-by-step support guides for an Electronic P
 (EPR) system. Guides are plain Markdown files; the folder structure they sit in becomes the
 site's navigation.
 
-**Proof of concept.** No authentication, no search, no server-side code.
-
-- **Readers** need nothing but a browser — open the site and pick a category.
-- **Content maintainers** want [Adding content](#adding-content) below.
-- **Whoever deploys it** wants [Deploying](#deploying).
-
----
-
 ## How it works
 
 The app is a static React bundle. It has no back end and no API — at runtime it only ever
@@ -35,7 +27,6 @@ manifest; each `.md` file is fetched on demand when a reader opens it.
             └── booking.mp4
 ```
 
----
 
 ## Running it locally
 
@@ -50,7 +41,6 @@ npm run dev
 | `npm run manifest` | Regenerates `content/manifest.json` from the local `content/` folder. |
 | `npm run import:docx` | Converts a Word document into a guide plus extracted images. |
 | `npm run build` | Builds the static bundle into `dist/`. Type-checks first. |
-| `npm run preview` | Serves the built bundle locally for a final check before deploying. |
 
 `npm run manifest` is an **admin-time tool that runs on your own machine**. The web server never
 runs it and does not need Node.js installed — it only serves static files.
@@ -78,51 +68,6 @@ category.
 
 Git does not track empty folders, so each empty category holds a `.gitkeep` file. Delete that once
 the folder has a real guide in it.
-
-### Formatting a guide
-
-Markdown, with a single `#` heading at the top for the title. Numbered steps, bullets, tables,
-`**bold**` for the exact thing to tap, backticks for values to type. Images and video use relative
-links: `![The search screen](./media/search.png)`; a link ending `.mp4`, `.webm` or `.ogv` becomes
-a video player. Link between guides with the real file name including `.md` and it navigates
-in-app rather than downloading.
-
-For something that needs to stand out, a marker on the first line of a blockquote makes a yellow
-alert box:
-
-```markdown
-> [!NOTE]
-> Keep the summary short so the list stays readable when printed.
-```
-
-`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]` all work — Note and Tip get an
-information icon, the rest a warning icon. The marker itself is never displayed.
-
-### Importing from Word
-
-```bash
-npm run import:docx -- "path/to/guide.docx" --into my-category --names "first-shot,second-shot"
-```
-
-Add `--dry-run` to print the Markdown without writing anything — always worth doing first.
-
-It converts text **verbatim**, including typos, and does not summarise or tidy. The only
-structural change is promoting the document's own bold, larger-than-body paragraphs to `##`
-headings; that text is matched, never retyped. Images are extracted to `media/`, deduplicated by
-content hash (Word often stores the same picture two or three times), and named from `--names` in
-first-appearance order.
-
-What it cannot carry across, and will tell you about:
-
-- **Text-box callouts lose their arrows.** Word guides often label a screenshot with floating
-  text boxes joined by arrow shapes. The words survive as ordinary paragraphs, but a label like
-  "click here" no longer points at anything. Check every converted callout still makes sense.
-- **SmartArt, WordArt and embedded objects** are dropped.
-- **Alt text.** Word's auto-generated "A screenshot of a computer…" is discarded rather than
-  published as if it were real alt text, so imported images start with empty `alt`. Add
-  descriptions if screen-reader users need them.
-- `.emf`/`.wmf` images (screenshots pasted straight from Windows) cannot be displayed by
-  browsers and will need re-exporting as PNG.
 
 ### Controlling the order things appear in
 
@@ -195,27 +140,6 @@ The two deployables are independent.
 `content/` is not bundled into `dist/`, so a content update never needs a rebuild and a code
 update never risks overwriting live content.
 
-### Deep links need no server configuration
-
-The app uses **hash routing**, so a guide's address looks like:
-
-```
-https://example.nhs.uk/#/wiki/appointments/book-an-appointment
-```
-
-Everything after `#` is never sent to the server, so bookmarks and shared links work on any
-static host — IIS, Apache, nginx, a file share — with **no rewrite rule and no configuration**.
-Asset paths are relative, so the app also works from a subfolder (`/epr-wiki/`) unchanged.
-
-<details>
-<summary>Switching to clean URLs (optional, needs host configuration)</summary>
-
-If the host can be configured, swap `HashRouter` for `BrowserRouter` in `src/main.tsx` and add a
-rewrite sending everything that is not a real file to `index.html` (on IIS, a URL Rewrite rule;
-on Apache, `FallbackResource /index.html`). Without that rewrite, deep links return 404 —
-which is exactly why hash routing is the default.
-</details>
-
 ### Directory browsing — worth asking about
 
 If the host has **directory browsing / autoindex** enabled for the `content/` path (on IIS, the
@@ -223,8 +147,6 @@ If the host has **directory browsing / autoindex** enabled for the `content/` pa
 manifest would become unnecessary. This build does **not** rely on that, because it is off by
 default on most hosts and its HTML output is not standardised. Worth confirming with whoever
 administers the hosting before investing in the manifest workflow long-term.
-
----
 
 ## Things to know before relying on this
 
