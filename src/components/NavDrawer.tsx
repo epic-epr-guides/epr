@@ -124,7 +124,12 @@ export function NavDrawer({ tree, activeSegments, open, isSidebar, onClose }: Na
         // needed on the right. The fill also keeps the panel readable further
         // down the page, where the halftone grid has faded out and the blur
         // alone has almost nothing to work with.
-        className="sticky top-16 max-h-[calc(100dvh-4rem)] w-76 self-start overflow-y-auto overscroll-contain bg-white/30 py-6 pb-16 backdrop-blur-xl"
+        // A fixed height rather than a max-height: with `max-h` the panel shrank
+        // to fit its categories and the translucent fill stopped mid-page, which
+        // read as a floating card. `h-[calc(100dvh-4rem)]` always runs from under
+        // the 4rem top bar to the bottom of the viewport, and the total still
+        // comes to exactly 100dvh so no scrollbar is introduced on short pages.
+        className="sticky top-16 h-[calc(100dvh-4rem)] w-76 self-start overflow-y-auto overscroll-contain bg-slate-400/10 py-6 pb-16 backdrop-blur-xl"
       >
         <div className="px-5 pb-2">{heading}</div>
         {tree$}
