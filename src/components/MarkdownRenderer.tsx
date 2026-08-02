@@ -77,10 +77,10 @@ const PROSE_CLASSES = [
   'prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-ink-900',
   '[&_blockquote_p]:before:content-none [&_blockquote_p]:after:content-none',
   // Exact values and code
-  'prose-code:rounded-md prose-code:bg-white/90 prose-code:px-1.5 prose-code:py-0.5',
+  'prose-code:rounded-md prose-code:bg-surface/90 prose-code:px-1.5 prose-code:py-0.5',
   'prose-code:font-medium prose-code:text-ink-900 prose-code:ring-1 prose-code:ring-ink-900/10',
   'prose-code:before:content-none prose-code:after:content-none',
-  'prose-pre:rounded-2xl prose-pre:bg-white/90 prose-pre:text-ink-900 prose-pre:ring-1 prose-pre:ring-ink-900/10',
+  'prose-pre:rounded-2xl prose-pre:bg-surface/90 prose-pre:text-ink-900 prose-pre:ring-1 prose-pre:ring-ink-900/10',
   '[&_pre_code]:bg-transparent [&_pre_code]:ring-0 [&_pre_code]:font-normal',
   // Media and rules. Screenshots carry their own window chrome and callout
   // boxes, so a border and rounded corners only fought with the image content.
@@ -104,7 +104,9 @@ function VideoFigure({ src, caption }: { src: string; caption?: ReactNode }) {
         src={src}
         // The aspect ratio reserves space before metadata loads, so the page
         // does not jump under the reader's thumb.
-        className="aspect-video w-full rounded-2xl bg-ink-900 ring-1 ring-ink-900/10"
+        // `bg-shade`, not `bg-ink-900`: the letterboxing behind a video stays
+        // dark in both themes rather than inverting to a white box.
+        className="aspect-video w-full rounded-2xl bg-shade ring-1 ring-ink-900/10"
       >
         Your browser cannot play this video. You can{' '}
         <a href={src} download>
@@ -246,7 +248,7 @@ export default function MarkdownRenderer({ markdown, guidePath }: MarkdownRender
     table({ children, ...rest }) {
       return (
         <div
-          className="my-7 overflow-x-auto rounded-2xl bg-white/80 ring-1 ring-ink-900/10"
+          className="my-7 overflow-x-auto rounded-2xl bg-surface/80 ring-1 ring-ink-900/10"
           tabIndex={0}
           role="group"
           aria-label="Table, scrolls sideways"

@@ -14,34 +14,37 @@
    grotesque for headings, a clean humanist sans for body text.
    --------------------------------------------------------------------------- */
 
-@theme {
+/* `inline` is load-bearing, not a style choice. Without it Tailwind resolves
+   every colour at build time, so `bg-surface/80` compiles to a literal
+   `#fffc` and stops tracking the theme — fine in dev, where the value still
+   goes through var(), and broken in the production build, where dark mode
+   would show white cards and invisible hairlines. With `inline`, utilities
+   emit `color-mix(… var(--color-surface) …)` and resolve at runtime.
+
+   So: the palette lives on :root below, and this block only names it. */
+@theme inline {
   --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Figtree Variable', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Figtree Variable', ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink-900: #0c2b33;
-  --color-ink-700: #27505b;
-  --color-ink-500: #4d707a;
-  --color-ink-300: #93aeb5;
+  --color-ink-900: var(--ink-900);
+  --color-ink-700: var(--ink-700);
+  --color-ink-500: var(--ink-500);
+  --color-ink-300: var(--ink-300);
 
-  /* Accent family, all hue 188 so they read as one colour.
-     `mid` is the brand colour as supplied. At 1.93:1 on white it cannot carry
-     text or icons, so it is used for washes, rings and the backdrop, and the
-     two darker steps below — same hue, same family — do the work that needs
-     contrast. Measured against white: deep 6.5:1, dark 9.0:1. */
-  --color-teal-soft: #e6f2f4;
-  --color-teal-mid: #90c3cb;
-  --color-teal-deep: #2a666f;
-  --color-teal-dark: #1e4f57;
+  --color-teal-soft: var(--teal-soft);
+  --color-teal-mid: var(--teal-mid);
+  --color-teal-deep: var(--teal-deep);
+  --color-teal-dark: var(--teal-dark);
 
-  --color-mist: #f4f9fb;
+  --color-mist: var(--mist);
+  --color-surface: var(--surface);
+  --color-shade: var(--shade);
 
-  --color-amber-soft: #fdf0dc;
-  --color-amber-deep: #b97324;
-  /* Light yellow ground for note/warning callouts inside guide content.
-     ink-900 text on this clears WCAG AA comfortably. */
-  --color-amber-wash: #fdf3c9;
-  --color-amber-line: #e6c454;
+  --color-amber-soft: var(--amber-soft);
+  --color-amber-deep: var(--amber-deep);
+  --color-amber-wash: var(--amber-wash);
+  --color-amber-line: var(--amber-line);
 
   /* Minimum comfortable touch target. Used as a named size so the 44px rule is
      explicit in the markup rather than a magic number. */
@@ -91,6 +94,95 @@
       transform: translateX(0);
     }
   }
+}
+
+/* ---------------------------------------------------------------------------
+   Themes
+
+   Dark is the default: `index.html` stamps `data-theme` on <html> before the
+   first paint, falling back to "dark" when nothing is stored.
+
+   The whole app themes by moving these token values — the ink ramp inverts, so
+   `text-ink-900` stays "the strongest text colour" and every `border-ink-900/5`
+   hairline becomes a light hairline on dark without any markup changing.
+
+   Two tokens deliberately do NOT invert: `--color-shade` (shadows and the
+   drawer scrim are dark in both themes) and the aurora tints below.
+   --------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --ink-900: #0c2b33;
+  --ink-700: #27505b;
+  --ink-500: #4d707a;
+  --ink-300: #93aeb5;
+
+  /* Accent family, all hue 188 so they read as one colour.
+     `mid` is the brand colour as supplied. At 1.93:1 on white it cannot carry
+     text or icons, so it is used for washes, rings and the backdrop, and the
+     two darker steps below — same hue, same family — do the work that needs
+     contrast. Measured against white: deep 6.5:1, dark 9.0:1. */
+  --teal-soft: #e6f2f4;
+  --teal-mid: #90c3cb;
+  --teal-deep: #2a666f;
+  --teal-dark: #1e4f57;
+
+  --mist: #f4f9fb;
+
+  /* The raised surface: cards, the drawer, code blocks. A token rather than a
+     literal `white` so the dark theme can move it without touching markup. */
+  --surface: #ffffff;
+
+  /* Always dark, in both themes — scrims and drop shadows are shadow in the
+     dark theme too, so this one must not invert with the ink ramp. */
+  --shade: #0c2b33;
+
+  --amber-soft: #fdf0dc;
+  --amber-deep: #b97324;
+  /* Light yellow ground for note/warning callouts inside guide content.
+     ink-900 text on this clears WCAG AA comfortably. */
+  --amber-wash: #fdf3c9;
+  --amber-line: #e6c454;
+
+  --aurora-1: rgb(144 195 203 / 55%);
+  --aurora-2: rgb(55 138 221 / 14%);
+  --aurora-3: rgb(144 195 203 / 42%);
+  --halftone-dot: rgb(42 102 111 / 22%);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --ink-900: #eaf3f5;
+  --ink-700: #bed3d9;
+  --ink-500: #8ba7ae;
+  --ink-300: #587880;
+
+  /* Same hue family as the light theme, stepped the other way: `deep` and
+     `dark` now have to carry contrast against a dark ground rather than a
+     white one, so they lighten. Measured on --mist below: deep 8.0:1,
+     dark 10.4:1, ink-500 6.2:1. */
+  --teal-soft: #163940;
+  --teal-mid: #4d8d98;
+  --teal-deep: #7cc2cd;
+  --teal-dark: #a3dae3;
+
+  --mist: #0b1a1f;
+  --surface: #14282f;
+  --shade: #000000;
+
+  --amber-soft: #3b2a13;
+  --amber-deep: #e2a75f;
+  --amber-wash: #35301a;
+  --amber-line: #7a6626;
+
+  /* Dimmer and cooler: the light theme's washes are near-white at this
+     opacity and would glow against the dark ground. */
+  --aurora-1: rgb(77 141 152 / 22%);
+  --aurora-2: rgb(55 138 221 / 12%);
+  --aurora-3: rgb(77 141 152 / 16%);
+  --halftone-dot: rgb(144 195 203 / 12%);
 }
 
 /* ---------------------------------------------------------------------------
@@ -161,14 +253,15 @@
 @utility aurora {
   background-image:
     /* The brand colour is at its most useful here: large soft washes are where a
-       light tint actually reads. */
-    radial-gradient(60% 80% at 15% 20%, rgb(144 195 203 / 55%), transparent 60%),
-    radial-gradient(50% 70% at 85% 30%, rgb(55 138 221 / 14%), transparent 60%),
-    radial-gradient(70% 80% at 50% 100%, rgb(144 195 203 / 42%), transparent 65%);
+       light tint actually reads. Tints come from variables so the dark theme can
+       dim them without redefining the geometry. */
+    radial-gradient(60% 80% at 15% 20%, var(--aurora-1), transparent 60%),
+    radial-gradient(50% 70% at 85% 30%, var(--aurora-2), transparent 60%),
+    radial-gradient(70% 80% at 50% 100%, var(--aurora-3), transparent 65%);
 }
 
 @utility halftone {
-  background-image: radial-gradient(rgb(42 102 111 / 22%) 1.5px, transparent 1.5px);
+  background-image: radial-gradient(var(--halftone-dot) 1.5px, transparent 1.5px);
   background-size: 18px 18px;
   mask-image: linear-gradient(to bottom, black, transparent 70%);
   -webkit-mask-image: linear-gradient(to bottom, black, transparent 70%);
