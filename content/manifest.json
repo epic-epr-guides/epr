@@ -5,7 +5,23 @@
       "type": "folder",
       "path": "discharge",
       "title": "Discharge",
-      "children": []
+      "children": [
+        {
+          "type": "guide",
+          "path": "discharge-medications.md",
+          "title": "Discharge Medications (TTOs)"
+        },
+        {
+          "type": "guide",
+          "path": "discharge-summary.md",
+          "title": "Discharge Summary"
+        },
+        {
+          "type": "guide",
+          "path": "outpatient-referrals.md",
+          "title": "Outpatient Referrals"
+        }
+      ]
     },
     {
       "type": "folder",
@@ -33,19 +49,42 @@
       "type": "folder",
       "path": "handover",
       "title": "Handover",
-      "children": []
+      "children": [
+        {
+          "type": "guide",
+          "path": "general-medicine-opu-weekend-handover.md",
+          "title": "F1 General Medicine & OPU Weekend Ward Handover"
+        },
+        {
+          "type": "guide",
+          "path": "medical-night-handover.md",
+          "title": "F1 Night Medical Handover"
+        }
+      ]
     },
     {
       "type": "folder",
       "path": "hospital-course",
       "title": "Hospital Course",
-      "children": []
+      "children": [
+        {
+          "type": "guide",
+          "path": "hospital-course.md",
+          "title": "Hospital Course"
+        }
+      ]
     },
     {
       "type": "folder",
       "path": "imaging",
       "title": "Imaging",
-      "children": []
+      "children": [
+        {
+          "type": "guide",
+          "path": "ordering-and-vetting-scans.md",
+          "title": "Ordering Imaging"
+        }
+      ]
     },
     {
       "type": "folder",
@@ -53,10 +92,14 @@
       "title": "Order",
       "children": [
         {
-          "type": "folder",
-          "path": "bloods",
-          "title": "Bloods",
-          "children": []
+          "type": "guide",
+          "path": "blood-products.md",
+          "title": "Blood Products"
+        },
+        {
+          "type": "guide",
+          "path": "bloods.md",
+          "title": "Ordering Blood Tests"
         },
         {
           "type": "guide",
@@ -66,7 +109,17 @@
         {
           "type": "guide",
           "path": "order-panel.md",
-          "title": "Order Panel"
+          "title": "Creating and Order Panel"
+        },
+        {
+          "type": "guide",
+          "path": "prescribing-and-linking-orders.md",
+          "title": "Prescribing and adjusting Medication orders"
+        },
+        {
+          "type": "guide",
+          "path": "referrals.md",
+          "title": "Making Referrals"
         }
       ]
     },

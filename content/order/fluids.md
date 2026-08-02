@@ -1,6 +1,6 @@
 # Fluids
 
-All IV Fluids and Electrolytes are found on the 'Adult Fluids Maintenance and Electolyte Panel'
+All IV Fluids and Electrolytes are found on the **'Adult Fluids Maintenance and Electolyte Panel'**
 
 This is where you prescribe all maintenance fluids and any IV electolytes.
 

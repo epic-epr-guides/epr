@@ -14,7 +14,7 @@ Useful SmartPhrases that I use often include:
 
 There are many more and you can create your own or take from other people.
 
-Select 'My Tools' at the top and 'My Smartphrases'.
+Select **'My Tools'** at the top and **'My Smartphrases'**.
 
 Here you can see which smartphrases you have access to;
 
