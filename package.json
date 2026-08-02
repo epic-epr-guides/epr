@@ -1,7 +1,7 @@
 {
   "name": "epr-wiki",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "EPR Support Wiki — a static, mobile-first wiki that renders Markdown guides from a content/ folder.",
   "scripts": {
