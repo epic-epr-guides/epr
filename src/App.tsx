@@ -149,7 +149,7 @@ function WikiHome({ manifest }: { manifest: Manifest }) {
         title={SITE_NAME}
         segments={[]}
         nodes={manifest.tree}
-        intro="Clear, step-by-step guides for everyday tasks in the EPR system. Choose a category to begin."
+        intro="Clear and hopefully easy-to-follow guides for everyday tasks in the EPR system. Choose a category to begin."
       />
     </>
   )

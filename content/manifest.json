@@ -137,25 +137,8 @@
           "type": "guide",
           "path": "making-your-own-lists.md",
           "title": "Making your own Patient List"
-        },
-        {
-          "type": "guide",
-          "path": "inpatient-ward-list-guide.md",
-          "title": "Inpatient Ward List Guide"
         }
       ]
-    },
-    {
-      "type": "folder",
-      "path": "patient-summary",
-      "title": "Patient Summary",
-      "children": []
-    },
-    {
-      "type": "folder",
-      "path": "results",
-      "title": "Results",
-      "children": []
     }
   ]
 }
