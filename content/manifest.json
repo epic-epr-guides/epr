@@ -84,6 +84,11 @@
           "type": "guide",
           "path": "making-your-own-lists.md",
           "title": "Making your own Patient List"
+        },
+        {
+          "type": "guide",
+          "path": "inpatient-ward-list-guide.md",
+          "title": "Inpatient Ward List Guide"
         }
       ]
     },
@@ -103,13 +108,7 @@
       "type": "folder",
       "path": "epic",
       "title": "EPIC",
-      "children": [
-        {
-          "type": "guide",
-          "path": "inpatient-ward-list-guide.md",
-          "title": "Inpatient Ward List Guide"
-        }
-      ]
+      "children": []
     }
   ]
 }
